@@ -28,9 +28,9 @@ class PaymentsController extends Controller
 
      public function datatablesAllPayments()
      {
-         $payments = Payment::orderBy('id','desc')->get();
+         $payments = Payment::with('customer')->orderBy('id','desc')->get();
  
- 
+            // pa($payments);die;
          return DataTables::of($payments)
              ->addColumn('action', function ($payment) {
                  return '<a href="/payments/'.$payment->id.'/edit"><i class="fa fa-pencil"></i></a>';

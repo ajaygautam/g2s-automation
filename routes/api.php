@@ -16,14 +16,20 @@ use App\Http\Controllers\StripeController;
 |
 */
 
+Route::middleware('auth:api')->group( function () {
+    Route::prefix('/v1/')->group(function () {
+        Route::get('/customers/details/{id}', 'Api\ApiCustomerController@getCustomerDetails');
+    });
+});
+
 Route::post('/acuity_post', function(Request $request){
     Log::info('reached the route');
     Log::info(json_encode($request->all()));
 
     $req = $request->all();
-    $appointment_id = $req['id'];
+    // $appointment_id = $req['id'];
     // Log::info(json_encode($request->all()));
-    AppointmentsController::dumpAppointmentsIntoDB($appointment_id, $req['action']);
+    // AppointmentsController::dumpAppointmentsIntoDB($appointment_id, $req['action']);
 });
 
 
@@ -47,6 +53,11 @@ Route::get('/stripe_handler', function(Request $request){
 
 
 
+// Route::prefix('/v1/')->group(function () {
+//     Route::post('/users/register', 'Api\ApiUsersController@register');
+//     Route::post('/users/login', 'Api\ApiUsersController@login');
 
-Route::post('/users/register', 'Api\ApiUsersController@register');
-Route::post('/users/login', 'Api\ApiUsersController@login');
+//     //Customer
+//     Route::get('/customers/details/{id}', 'Api\ApiCustomerController@getCustomerDetails');
+
+// });

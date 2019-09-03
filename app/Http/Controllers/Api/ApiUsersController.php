@@ -18,10 +18,6 @@ class ApiUsersController extends Controller
             
             $oauth_client = \App\oAuthClient::where('user_id', $user->id)->first();
             
-            
-            
-            
-            
             $response = array(
                 'status' => 'true',
                 'message' => 'Login successfull',

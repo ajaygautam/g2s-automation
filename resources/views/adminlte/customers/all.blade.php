@@ -29,7 +29,7 @@
                   <th>Plan</th>
                   <th> {{date('M')}} - Usage</th>
                   <th>Due</th>
-                  <th>Last Visit/Appointment</th>
+                  <th>Next billing date</th>
                   <th>Charge</th>
                   <th>Actions</th>                  
                 </tr>
@@ -134,14 +134,7 @@
             },
 
           
-            {data: 'last_visit', name: 'last_visit', "render": function ( data, type, row ) {
-              console.log(row);
-              if(row.last_visit){
-                return row.last_visit.appointment_date;
-              }
-              return '';
-              }
-            },
+            {data: 'next_billing_date', name: 'next_billing_date'},
             
             {data: 'charge', name: 'charge', "render": function(data, type, row){
               var html = '<a href="/dashboard/customers/charge/'+row.id+'" class="btn btn-primary"><i class="fa fa-dollar"></i> Charge </a>';

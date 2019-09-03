@@ -64,16 +64,16 @@
       "order": [[ 0, "desc" ]],
       columns: [
             {data: 'id', name: 'id'},
-            {data: 'stripe_customer_id', name: 'stripe_customer_id'},
+            {data: 'id', name: 'name', "render":function(data, type, row){
+              console.log(row.customer);
+              return row.customer!='' ? row.customer.first_name+ ' ' + row.customer.last_name : '' ; 
+            }},
             {data: 'amount', name: 'amount'},
-            {data: 'stripe_payment_created', name: 'stripe_payment_created'},
+            {data: 'created_at', name: 'created_at'},
             
             {data: 'stripe_data', name: 'stripe_data', "render": function ( data, type, row ) {
                 var html = '<b>Charge ID:</b> '+ row.stripe_charge_id +'<br />';
-                html += '<b>Transaction ID:</b> '+ row.stripe_balance_transaction +'<br />';
-                html += '<b>Invoice:</b> '+ row.stripe_invoice +'<br />';
-                html += '<b>CC:</b> xxxx xxxx xxxx '+ row.stripe_card_last_4;
-                // return '<b>Charge ID:</b> '+ row.stripe_charge_id;
+                    html += '<b>CC:</b> xxxx xxxx xxxx '+ row.stripe_card_last_4;
                 return html;
               }
             },

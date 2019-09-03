@@ -45,7 +45,6 @@ Route::prefix('dashboard')->group(function () {
 
     //Customers
     Route::get('/customers','CustomersController@index');
-    Route::get('/customers/charge/{id}/{month?}/{year?}','CustomersController@charge');
     Route::get('customers/dt/all_customers','CustomersController@datatablesAllCustomers');
 
     //Payments
@@ -64,9 +63,22 @@ Route::prefix('dashboard')->group(function () {
     
 
     //TEST STRIPE CONTROLLER
+    Route::get('/stripe_subscription','StripeController@StripeSubscription');
+    Route::post('/stripe_subscription','StripeController@StripeSubscriptionPost');
     Route::get('/stripe_to_db','StripeController@StripePost');
+    Route::get('/charge/{month?}/{year?}','StripeController@charge');
+
 
 
 
 });
+
+Route::post('/stripe_subscription','StripeController@StripeSubscriptionPost');
+Route::get('/charge','StripeController@charge');
+
+Route::get('payment_form', function(){
+    return view('payment_form');
+});
+
+Route::get('payment_success/{payment_id}', 'StripeController@paymentSuccessPage');
 

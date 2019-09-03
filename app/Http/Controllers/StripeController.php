@@ -7,6 +7,11 @@ use App\Membership;
 use App\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redirect;
+use Stripe\Charge;
+use Stripe\Stripe;
+use Stripe\Token as StripeToken;
+
 
 class StripeController extends Controller
 {
@@ -196,4 +201,207 @@ class StripeController extends Controller
 
        
     }
+
+
+
+    public function StripeSubscription(){
+        // Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        // $stripeToken = StripeToken::create(array(
+        //     "card" => array(
+        //         "number"    => '4111111111111111',
+        //         "exp_month" => '01',
+        //         "exp_year"  => '21',
+        //         "cvc"       => '123',
+        //         "name"      => 'sarav'
+        //     )
+        // ));
+
+        // $customer = \Stripe\Customer::create([
+        //     'source' => $stripeToken->id,
+        //     'email' => 'sarabjeet.dhillon+19@sdnatech.com',
+        // ]);
+
+        // pa($stripeToken);
+        // pa($customer);die;
+
+        // $customer = Customer::find(6);
+        // $result =   $customer->newSubscription('main', 'prod_Fc8lbdYB80MaKb')->create($stripeToken,[
+        //     'email' => 'sarabjeet.dhillon+20@sdnatech.com',
+        // ]);
+
+            // pa($stripeToken);die;
+            
+        // echo $customer->primary_email;    
+        // die;    
+
+        // $result = $customer->newSubscription('My Subscription', 'plan_Fc8mbkveh4Qnan')
+        //     ->create($stripeToken->id, [
+        //     'name' => 'SARABJEET DHILLON',
+        //     'email' => $customer->primary_email,
+        //     'description' => 'SARAB TEST'
+        // ]);
+
+        // pa($result);
+    }
+
+    public function StripeSubscriptionPost(Request $request){
+       
+       $allRequests = $request->all();
+       $stripeToken = $request->stripeToken;
+       Stripe::setApiKey(env('STRIPE_SECRET'));
+       
+       $customer = Customer::where('primary_email', $request->primary_email)->get();
+
+       if($customer->count()== 0){
+            $stripeCustomer = \Stripe\Customer::create([
+                'source' => $stripeToken,
+                'name' => $request->customer_name,
+                'email' => $request->primary_email,
+            ]);
+            if($stripeCustomer){
+                $name = explode(' ', $request->customer_name);
+                $plan_starts_on = date('Y-m-d');
+                $plan_ends_on = date('Y-m-d', strtotime('+1 year'));
+                $next_billing_date = date('Y-m-d', strtotime('+1 month'));
+                        
+                $customer = Customer::create([
+                        'primary_email' => $request->primary_email,
+                        'first_name' => $name[0],
+                        'last_name' => $name[count($name)-1],
+                        'membership_plan_id' => $request->membership_plan_id,
+                        'plan_starts_on' => $plan_starts_on,
+                        'plan_ends_on' => $plan_ends_on,
+                        'next_billing_date' => $next_billing_date,
+                        'stripe_customer_id' => $stripeCustomer->id,
+                    ]
+                );
+            }
+       }
+      
+        $membership = Membership::find($request->membership_plan_id);
+        $membership_cost = $membership->cost;
+
+        $charge = \Stripe\Charge::create([
+            "amount" => $membership_cost * 100, // convert to cents - stripe accepts in cents
+            "currency" => "usd",
+            "customer" => $customer->stripe_customer_id, // Stripe customer ID
+            "description" => "Charge for ". $request->customer_name
+        ]);
+
+        if($charge){
+            $payment = Payment::create([
+                'customer_id' => $customer->id,
+                'amount' => $membership_cost,
+                'payment_type' => 'new_membership',
+                'payment_status' => $charge->status,
+                'stripe_charge_id' => $charge->id,
+                'stripe_invoice' => $charge->invoice,
+                'stripe_card_last_4' => $charge->source->last4,
+                'stripe_card_exp_month' => $charge->source->exp_month,
+                'stripe_card_exp_year' => $charge->source->exp_year,
+                'stripe_receipt_url' => $charge->receipt_url,
+                'stripe_currency' => $charge->currency,
+                'raw_response' => json_encode($charge),
+            ]);
+        }    
+
+        return Redirect::to('payment_success/'.$payment->id);
+    }
+
+    public function paymentSuccessPage($id){
+        $payment = Payment::find($id);
+        $link = $payment->stripe_receipt_url;
+        
+        return view('payment_success',['link'=>$link]);
+    }
+
+
+    //same as commange StripeCharge - will be removed from here
+    public function charge($month=null, $year = null){
+        if($month == null){
+            $month = date('m');
+        }
+        if($year == null){
+            $year = date('Y');
+        }
+
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+         
+
+        // die;
+         $customers = Customer::with('membership','last_visit','peak_hours_usage','off_peak_hours_usage')->where('next_billing_date',date('Y-m-d'))->get();
+
+         $peak_hour_charge = 60; 
+         $off_peak_hour_charge = 45;
+         $discount_play = 15;  //in percent
+
+        foreach($customers as $customer){
+            // echo count($customer->peak_hours_usage);
+            // pa($customer);die;
+            $used_peak_hours = $used_off_peak_hours = 0;
+            
+            if(count($customer->peak_hours_usage)){
+                $used_peak_hours = $customer->peak_hours_usage[0]->peak_hours_used; 
+            }
+            if(count($customer->off_peak_hours_usage)){
+                $used_off_peak_hours = $customer->off_peak_hours_usage[0]->off_peak_hours_used; 
+            }
+            
+            $included_peak_hours = $customer->membership->included_peak_hours;
+            $included_off_peak_hours = $customer->membership->included_off_peak_hours;
+   
+            $additional = (($used_peak_hours - $included_peak_hours) * $peak_hour_charge) +  (($used_off_peak_hours - $included_off_peak_hours) * $off_peak_hour_charge);
+            $additional_final = $additional - ($additional * $discount_play)/100;
+
+            if($additional_final>0){
+                $chargable_amount = $customer->membership->cost + $additional_final;
+            }
+            else{
+                $chargable_amount = $customer->membership->cost;
+            }
+            // pa($chargable_amount);
+
+            if($chargable_amount > 0){
+                $charge = Charge::create([
+                    "amount" => $chargable_amount * 100, //convert into cents
+                    "currency" => "usd",
+                    "customer" => $customer->stripe_customer_id,
+                    "description" => "Play charges"
+                  ]);
+
+                if($charge){
+                    $payment = Payment::create([
+                        'customer_id' => $customer->id,
+                        'amount' => $chargable_amount,
+                        'payment_type' => $additional_final>0 ? 'membership_fee_plus_additional' : 'membership_fee' ,
+                        'payment_status' => $charge->status,
+                        'stripe_charge_id' => $charge->id,
+                        'stripe_card_last_4' => $charge->source->last4,
+                        'stripe_card_exp_month' => $charge->source->exp_month,
+                        'stripe_card_exp_year' => $charge->source->exp_year,
+                        'stripe_receipt_url' => $charge->receipt_url,
+                        'stripe_currency' => $charge->currency,
+                        'raw_response' => json_encode($charge),
+                    ]);
+                
+                    //update next billing date
+                    $next_billing_date = date('Y-m-d', strtotime('+1 month'));
+                    if($next_billing_date != $customer->plan_ends_on)
+                    {
+                        $customer->next_billing_date = $next_billing_date;
+                        $customer->save();
+                    }
+                }    
+            }
+
+
+        } 
+
+       
+    }
+
+
+
+
 }
