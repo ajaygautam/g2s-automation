@@ -58,7 +58,7 @@
     $('#business_table').DataTable({
       "processing": true,
       "serverSide": true,
-      "ajax": '/dashboard/users/dt/all_users',
+      "ajax": '{{url("/dashboard/users/dt/all_users")}}',
       columns: [
             {data: 'id', name: 'id'},
             {data: 'name', name: 'name'},

@@ -47,13 +47,11 @@
                         <input name="primary_email" placeholder="Enter your email address" type="email" class="form-control" />
                     </div>
                     <div class="form-group">
-                        <label>Example select</label>
+                        <label>Membership Plan</label>
                         <select class="form-control" name="membership_plan_id">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
+                            <option value="1">Par</option>
+                            <option value="2">Birdie</option>
+                            <option value="3">Albatross</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -66,7 +64,7 @@
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                        <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                        <label class="form-check-label" for="exampleCheck1">I agree with terms and conditions</label>
                     </div>
         
                 <button class="btn btn-primary mt-3">Submit Payment</button>

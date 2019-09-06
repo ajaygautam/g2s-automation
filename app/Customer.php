@@ -35,7 +35,9 @@ class Customer extends Model
         'plan_hold_ends_on',
         'stripe_product_id',
         'stripe_customer_id',
-        'stripe_subscription_id'
+        'stripe_subscription_id',
+        'next_billing_date',
+        'status'
     ];
 
     public function membership(){

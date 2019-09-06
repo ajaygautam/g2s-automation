@@ -122,80 +122,80 @@ class StripeController extends Controller
 
         $res = json_decode($payload);
 
-        //get Membership Plan Id
-        $membership = Membership::where('stripe_product_id', $res->data->object->subscriptions->data[0]->items->data[0]->plan->product )->first();
+        // //get Membership Plan Id
+        // $membership = Membership::where('stripe_product_id', $res->data->object->subscriptions->data[0]->items->data[0]->plan->product )->first();
 
 
-        if ($res->type == 'customer.updated') {
-            $customer['stripe_customer_id'] = $res->data->object->id;
-            $customer['email'] = $res->data->object->email;
-            $customer['invoice_prefix'] = $res->data->object->invoice_prefix;
-            $customer['name'] = $res->data->object->name;
-            $customer['phone'] = $res->data->object->phone;
-            $customer['subscription_id'] = $res->data->object->subscriptions->data[0]->id;
-            $customer['subscription_start_time'] = date('Y-m-d H:i:s', $res->data->object->subscriptions->data[0]->billing_cycle_anchor);
-            $customer['current_period_start'] = date('Y-m-d H:i:s', $res->data->object->subscriptions->data[0]->current_period_start);
-            $customer['current_period_end'] = date('Y-m-d H:i:s', $res->data->object->subscriptions->data[0]->current_period_end);
-            $customer['collection_method'] = $res->data->object->subscriptions->data[0]->collection_method;
-            $customer['discount'] = $res->data->object->subscriptions->data[0]->discount;
-            $customer['plan_id'] = $res->data->object->subscriptions->data[0]->items->data[0]->plan->id;
-            $customer['amount'] = $res->data->object->subscriptions->data[0]->items->data[0]->plan->amount;
-            $customer['interval'] = $res->data->object->subscriptions->data[0]->items->data[0]->plan->interval;
-            $customer['product'] = $res->data->object->subscriptions->data[0]->items->data[0]->plan->product;
+        // if ($res->type == 'customer.updated') {
+        //     $customer['stripe_customer_id'] = $res->data->object->id;
+        //     $customer['email'] = $res->data->object->email;
+        //     $customer['invoice_prefix'] = $res->data->object->invoice_prefix;
+        //     $customer['name'] = $res->data->object->name;
+        //     $customer['phone'] = $res->data->object->phone;
+        //     $customer['subscription_id'] = $res->data->object->subscriptions->data[0]->id;
+        //     $customer['subscription_start_time'] = date('Y-m-d H:i:s', $res->data->object->subscriptions->data[0]->billing_cycle_anchor);
+        //     $customer['current_period_start'] = date('Y-m-d H:i:s', $res->data->object->subscriptions->data[0]->current_period_start);
+        //     $customer['current_period_end'] = date('Y-m-d H:i:s', $res->data->object->subscriptions->data[0]->current_period_end);
+        //     $customer['collection_method'] = $res->data->object->subscriptions->data[0]->collection_method;
+        //     $customer['discount'] = $res->data->object->subscriptions->data[0]->discount;
+        //     $customer['plan_id'] = $res->data->object->subscriptions->data[0]->items->data[0]->plan->id;
+        //     $customer['amount'] = $res->data->object->subscriptions->data[0]->items->data[0]->plan->amount;
+        //     $customer['interval'] = $res->data->object->subscriptions->data[0]->items->data[0]->plan->interval;
+        //     $customer['product'] = $res->data->object->subscriptions->data[0]->items->data[0]->plan->product;
             
 
 
 
-            $customerObj = Customer::create([
-                'first_name' =>  $customer['name'],
-                'primary_phone' => $customer['phone'],
-                'primary_email' =>  $customer['email'],
-                'plan_starts_on' => $customer['current_period_start'],
-                'plan_ends_on' => $customer['current_period_end'],
-                'is_plan_hold' => 0,
-                'membership_plan_id' => $membership->id,
-                'stripe_product_id' => $customer['product'],
-                'stripe_customer_id' => $customer['stripe_customer_id'],
-                'stripe_subscription_id' => $customer['subscription_id']
-            ]);
-        }
+        //     $customerObj = Customer::create([
+        //         'first_name' =>  $customer['name'],
+        //         'primary_phone' => $customer['phone'],
+        //         'primary_email' =>  $customer['email'],
+        //         'plan_starts_on' => $customer['current_period_start'],
+        //         'plan_ends_on' => $customer['current_period_end'],
+        //         'is_plan_hold' => 0,
+        //         'membership_plan_id' => $membership->id,
+        //         'stripe_product_id' => $customer['product'],
+        //         'stripe_customer_id' => $customer['stripe_customer_id'],
+        //         'stripe_subscription_id' => $customer['subscription_id']
+        //     ]);
+        // }
 
-        if ($res->type == 'charge.succeeded') {
-            $payment['charge_id'] = $res->data->object->id;
-            $payment['amount'] = number_format(($res->data->object->amount) / 100, 2, '.', '');
-            $payment['balance_transaction'] = $res->data->object->balance_transaction;
-            $payment['created'] = $res->data->object->created;
-            $payment['currency'] = $res->data->object->currency;
-            $payment['customer'] = $res->data->object->customer;
-            $payment['invoice'] = $res->data->object->invoice;
-            $payment['brand'] = $res->data->object->payment_method_details->card->brand;
-            $payment['cc_exp_month'] = $res->data->object->payment_method_details->card->exp_month;
-            $payment['cc_exp_year'] = $res->data->object->payment_method_details->card->exp_year;
-            $payment['cc_last_four'] = $res->data->object->payment_method_details->card->last4;
-            $payment['fingerprint'] = $res->data->object->payment_method_details->card->fingerprint;
-            $payment['receipt_url'] = $res->data->object->receipt_url;
-            $payment['status'] = $res->data->object->status;
-            //  pa($res);
+        // if ($res->type == 'charge.succeeded') {
+        //     $payment['charge_id'] = $res->data->object->id;
+        //     $payment['amount'] = number_format(($res->data->object->amount) / 100, 2, '.', '');
+        //     $payment['balance_transaction'] = $res->data->object->balance_transaction;
+        //     $payment['created'] = $res->data->object->created;
+        //     $payment['currency'] = $res->data->object->currency;
+        //     $payment['customer'] = $res->data->object->customer;
+        //     $payment['invoice'] = $res->data->object->invoice;
+        //     $payment['brand'] = $res->data->object->payment_method_details->card->brand;
+        //     $payment['cc_exp_month'] = $res->data->object->payment_method_details->card->exp_month;
+        //     $payment['cc_exp_year'] = $res->data->object->payment_method_details->card->exp_year;
+        //     $payment['cc_last_four'] = $res->data->object->payment_method_details->card->last4;
+        //     $payment['fingerprint'] = $res->data->object->payment_method_details->card->fingerprint;
+        //     $payment['receipt_url'] = $res->data->object->receipt_url;
+        //     $payment['status'] = $res->data->object->status;
+        //     //  pa($res);
 
-            $paymentObj = Payment::create([
-               // 'user_id' => $customerObj->id,
-                'amount' => $payment['amount'],
-                'payment_for' => 'New Membership',
-                'payment_status' => $payment['status'],
-                'transaction_id' => $payment['balance_transaction'],
-                'stripe_customer_id' =>  $payment['customer'],
-                'stripe_charge_id' =>  $payment['charge_id'],
-                'stripe_balance_transaction' =>  $payment['balance_transaction'],
-                'stripe_invoice' => $payment['invoice'],
-                'stripe_card_last_4' => $payment['cc_last_four'],
-                'stripe_card_exp_month' => $payment['cc_exp_month'],
-                'stripe_card_exp_year' => $payment['cc_exp_year'],
-                'stripe_payment_fingureprint' =>  $payment['fingerprint'],
-                'stripe_receipt_url' => $payment['receipt_url'],
-                'stripe_payment_created' => date('Y-m-d H:i:s',  $payment['created']),
-                'stripe_currency' =>  $payment['currency'],
-            ]);
-        }
+        //     $paymentObj = Payment::create([
+        //        // 'user_id' => $customerObj->id,
+        //         'amount' => $payment['amount'],
+        //         'payment_for' => 'New Membership',
+        //         'payment_status' => $payment['status'],
+        //         'transaction_id' => $payment['balance_transaction'],
+        //         'stripe_customer_id' =>  $payment['customer'],
+        //         'stripe_charge_id' =>  $payment['charge_id'],
+        //         'stripe_balance_transaction' =>  $payment['balance_transaction'],
+        //         'stripe_invoice' => $payment['invoice'],
+        //         'stripe_card_last_4' => $payment['cc_last_four'],
+        //         'stripe_card_exp_month' => $payment['cc_exp_month'],
+        //         'stripe_card_exp_year' => $payment['cc_exp_year'],
+        //         'stripe_payment_fingureprint' =>  $payment['fingerprint'],
+        //         'stripe_receipt_url' => $payment['receipt_url'],
+        //         'stripe_payment_created' => date('Y-m-d H:i:s',  $payment['created']),
+        //         'stripe_currency' =>  $payment['currency'],
+        //     ]);
+        // }
 
         Log::info('Stripe payload handled successfully');
 
@@ -296,7 +296,6 @@ class StripeController extends Controller
                 'payment_type' => 'new_membership',
                 'payment_status' => $charge->status,
                 'stripe_charge_id' => $charge->id,
-                'stripe_invoice' => $charge->invoice,
                 'stripe_card_last_4' => $charge->source->last4,
                 'stripe_card_exp_month' => $charge->source->exp_month,
                 'stripe_card_exp_year' => $charge->source->exp_year,
@@ -304,6 +303,10 @@ class StripeController extends Controller
                 'stripe_currency' => $charge->currency,
                 'raw_response' => json_encode($charge),
             ]);
+
+            //change status of customer to active
+            $customer->status = '1';
+            $customer->save();
         }    
 
         return Redirect::to('payment_success/'.$payment->id);
