@@ -1,7 +1,7 @@
 /node_modules
 /public/bower_components
-/public/css
-/public/js
+# /public/css
+# /public/js
 /public/plugins
 /storage
 /.idea
@@ -11,4 +11,3 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
-

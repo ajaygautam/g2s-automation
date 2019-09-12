@@ -82,6 +82,7 @@ sudo apt-get install php7.2-opcache php7.2-mbstring php-memcached
 sudo apt-get install php7.2-curl
 sudo apt-get install php7.2-mysql php7.2-soap
 
+
 17. Enable .htaccess
 sudo a2enmod rewrite
 
