@@ -1,8 +1,8 @@
 /node_modules
-/public/bower_components
+# /public/bower_components
 # /public/css
 # /public/js
-/public/plugins
+# /public/plugins
 /storage
 /.idea
 /.vscode
