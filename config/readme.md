@@ -104,6 +104,21 @@ sudo vim /etc/apache2/sites-available/000-default.conf
 18. Restart Apache
 sudo systemctl restart apache2
 
+
+19. Pull Code from GIT
+ sudo git clone https://github.com/ajaygautam/g2s-automation.git
+
+ 20. To install all dependencies -  download composer first
+    sudo apt-get install curl
+    cd ~
+    sudo curl -s https://getcomposer.org/installer | php
+    sudo mv composer.phar /usr/local/bin/composer
+    composer
+
+21. Go to working directory and type:
+    composer update
+
+
 ########################################################
 
 Steps 
