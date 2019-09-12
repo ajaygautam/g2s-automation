@@ -11,5 +11,8 @@ return [
         'Tuesday',
         'Wednesday',
         'Thursday'
+    ],
+    'holiday_dates'=>[
+        '2019-07-04'
     ]
 ];
