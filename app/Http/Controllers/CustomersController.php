@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -76,7 +77,7 @@ class CustomersController extends Controller
      public function datatablesAllCustomers()
      {
         DB::connection()->enableQueryLog();
-        $customers = Customer::with('membership','last_visit','peak_hours_usage','off_peak_hours_usage')->orderBy('id','desc')->get();
+        $customers = User::with('membership','peak_hours_usage','off_peak_hours_usage')->orderBy('id','desc')->get();
         $queries = DB::getQueryLog();
         // allQuery($queries);
         // pa($customers);
@@ -99,8 +100,7 @@ class CustomersController extends Controller
             //      return '<a href="/customers/'.$customer->id.'/edit"><i class="fa fa-dollar"></i></a>';
             //  })
              ->addColumn('action', function ($customer) {
-                 return '<a href="/customers/'.$customer->id.'/edit"><i class="fa fa-pencil"></i></a>&nbsp;
-                 <a href="/customers/'.$customer->id.'/edit"><i class="fa fa-dollar"></i></a>';
+                 return '<a href="/customers/'.$customer->id.'/edit"><i class="fa fa-pencil"></i></a>&nbsp;';
              })
              ->make(true);
      }

@@ -31,7 +31,7 @@ class Payment extends Model
     ];
 
     public function customer(){
-        return $this->hasOne('App\Customer','id','customer_id');
+        return $this->hasOne('App\User','id','customer_id');
     }
 
 }

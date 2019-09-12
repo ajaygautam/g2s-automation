@@ -1,4 +1,8 @@
 <?php
+
+use App\Membership;
+use App\Resource;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 /*
@@ -52,10 +56,19 @@ Route::prefix('dashboard')->group(function () {
     Route::get('payments/dt/all_payments','PaymentsController@datatablesAllPayments');
 
     //memberships
-    Route::get('/memberships','MembershipsController@index');
-    Route::get('/memberships/create','MembershipsController@create');
-    Route::post('/memberships','MembershipsController@store');
+    Route::resource('/memberships','MembershipsController' );
+
+    // Route::get('/memberships','MembershipsController@index');
+    // Route::get('/memberships/create','MembershipsController@create');
+    // Route::post('/memberships','MembershipsController@store');
     Route::get('memberships/dt/all_memberships','MembershipsController@datatablesAllMemberships');
+
+    //Resources
+    // Route::get('/resources','MembershipsController@index');
+    // Route::get('/memberships/create','MembershipsController@create');
+    // Route::post('/memberships','MembershipsController@store');
+    Route::resource('/resources','ResourcesController' );
+    
 
     //config
     Route::get('/config','ConfigController@index');
@@ -76,9 +89,11 @@ Route::prefix('dashboard')->group(function () {
 Route::post('/stripe_subscription','StripeController@StripeSubscriptionPost');
 Route::get('/charge','StripeController@charge');
 
-Route::get('payment_form', function(){
-    return view('payment_form');
+Route::get('payment_form/{plan_code}', function($plan_code){
+    $plan = Membership::where('plan_code',$plan_code)->first();
+        $data = [];
+    $data['plan'] = $plan;
+    return view('payment_form', $data);
 });
 
 Route::get('payment_success/{payment_id}', 'StripeController@paymentSuccessPage');
-

@@ -64,16 +64,22 @@
       "order": [[ 0, "desc" ]],
       columns: [
             {data: 'id', name: 'id'},
-            {data: 'id', name: 'name', "render":function(data, type, row){
+            {data: 'name', name: 'name', "render":function(data, type, row){
               console.log(row.customer);
-              return row.customer!='' ? row.customer.first_name+ ' ' + row.customer.last_name : '' ; 
+              if(row.customer){
+                var html =  row.customer.first_name!='' ? row.customer.first_name+' ' : '';
+                html += row.customer.last_name!=''? row.customer.last_name:''; 
+                return html;
+            }
+              
+              return '';
             }},
             {data: 'amount', name: 'amount'},
             {data: 'created_at', name: 'created_at'},
             
             {data: 'stripe_data', name: 'stripe_data', "render": function ( data, type, row ) {
                 var html = '<b>Charge ID:</b> '+ row.stripe_charge_id +'<br />';
-                    html += '<b>CC:</b> xxxx xxxx xxxx '+ row.stripe_card_last_4;
+                    // html += '<b>CC:</b> xxxx xxxx xxxx '+ row.stripe_card_last_4;
                 return html;
               }
             },

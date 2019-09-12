@@ -37,6 +37,8 @@
         <div class="form-wrap d-flex justify-content-center align-items-center">
             <form action="{{url('/stripe_subscription')}}" method="post" id="payment-form">
             @csrf
+            <input type="hidden" name="plan_code" value="{{$plan->plan_code}}" />
+            
                 <h3 class="text-center mb-2">Payment Info</h3>
                     <div class="form-group">
                         <label>Name</label>
@@ -48,11 +50,7 @@
                     </div>
                     <div class="form-group">
                         <label>Membership Plan</label>
-                        <select class="form-control" name="membership_plan_id">
-                            <option value="1">Par</option>
-                            <option value="2">Birdie</option>
-                            <option value="3">Albatross</option>
-                        </select>
+                        <span class="form-control">{{$plan->plan_name}}</span>
                     </div>
                     <div class="form-group">
                         <label>Credit card Info</label>

@@ -16,14 +16,16 @@ class Appointment extends Model
         'appointment_end_time',
         'paid',
         'price',
+        'amount_paid',
         'acuity_appointment_id',
-        'peak_hours_used',
-        'off_peak_hours_used',
+        'acuity_appointment_type',
+        'acuity_calendar_id',
+        'duration',
         'acuity_action'
     ];
 
     public function customer(){
-        return $this->hasOne('App\Customer', 'id', 'customer_id');
+        return $this->hasOne('App\User', 'id', 'customer_id');
     }
 }
 

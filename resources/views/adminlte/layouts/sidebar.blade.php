@@ -71,6 +71,10 @@
             </span>
           </a>
         </li>          
+     
+        <li {{$component=='resources'?'class=active':''}}>
+          <a href="{{url('/dashboard/resources')}}"><i class="fa fa-users"></i> <span>Resources</span></a>
+        </li>          
         
         <li {{$component=='memberships'?'class=active':''}}>
           <a href="{{url('/dashboard/memberships')}}"><i class="fa fa-users"></i> <span>Membership Plans</span>

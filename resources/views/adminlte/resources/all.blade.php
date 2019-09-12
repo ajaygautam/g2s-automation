@@ -15,45 +15,33 @@
         <div class="col-xs-12">
         <div class="box">
             <div class="box-header">
-              <h3 class="box-title">All Membership Plans</h3>
-              <a href="{{url('/dashboard/memberships/create')}}" class="btn btn-success pull-right"><i class="fa fa-plus"></i> New Membership Plan</a>  
+              <h3 class="box-title">All Resource</h3>
+              <a href="{{url('/dashboard/resources/create')}}" class="btn btn-success pull-right"><i class="fa fa-plus"></i> New Resource Plan</a>  
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <table id="business_table" class="table table-bordered ">
+              <table id="resource_table" class="table table-bordered ">
                 <thead>
                 <tr>
                   <th>ID</th>
                   <th>Name</th>
-                  <th>Peak Hours</th>
-                  <th>Off Peak Hours</th>
-                  <th>Additional Play Disc.</th>
-                  <th>Food Disc.</th>
-                  <th>Event Disc.</th>
-                  <th>On Season</th>
-                  <th>Off Season</th>
+                  <th>Type</th>
+                  <th>Peak Hours Cost</th>
+                  <th>Off Peak Hours Cost</th>
                   <th>Actions</th>
-                  
                 </tr>
                 </thead>
                 
                 <tbody>
-                  @foreach($allMemberships as $plan)
+                  @foreach($allResources as $resource)
                   <tr>
-                    <td>{{$plan->id}}</td>
-                    <td>{{$plan->plan_name}}</td>
-                    <td>{{$plan->included_peak_hours=='-1'?'Unlimited':$plan->included_peak_hours}}</td>
-                    <td>{{$plan->included_off_peak_hours=='-1'?'Unlimited':$plan->included_off_peak_hours}}</td>
-                    <td>{{$plan->play_discount=='-1'?'Unlimited':$plan->play_discount.'%'}}</td>
-                    <td>{{$plan->food_discount}}%</td>
-                    <td>{{$plan->events_discount}}%</td>
-                    <td>{{$plan->monthly_due_on_season=='0.00'?'Cost on Call': '$'.$plan->monthly_due_on_season}}</td>
-                    <td>{{$plan->monthly_due_off_season=='0.00'?'Cost on Call': '$'.$plan->monthly_due_off_season}}</td>
+                    <td>{{$resource->id}}</td>
+                    <td>{{$resource->resource_name}}</td>
+                    <td>{{$resource->resource_type==1?'Bay':''}}</td>
+                    <td>{{$resource->peak_price}}</td>
+                    <td>{{$resource->off_peak_price}}</td>
                     <td>
-                      <a href="{{url('/dashboard/memberships/'.$plan->id.'/edit')}}"><i class="fa fa-pencil"></i></a>
-                      <a href="{{url('/payment_form/'.$plan->plan_code)}}">
-                       <i class="fa fa-eye"></i>
-                      </a>
+                      <a href="/dashboard/resources/{{$resource->id}}/edit"><i class="fa fa-pencil"></i></a>
                     </td>
                   </tr>
                   @endforeach
@@ -83,7 +71,7 @@
 
 <script>
   $(function () {
-    $('#business_table').DataTable({
+    $('#resource_table').DataTable({
       "processing": true,
       "serverSide": false,
       "paging": false,

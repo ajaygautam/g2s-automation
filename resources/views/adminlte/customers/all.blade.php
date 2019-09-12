@@ -29,8 +29,8 @@
                   <th>Plan</th>
                   <th> {{date('M')}} - Usage</th>
                   <th>Due</th>
-                  <th>Next billing date</th>
-                  <th>Charge</th>
+                  
+                 
                   <th>Actions</th>                  
                 </tr>
                 </thead>
@@ -71,11 +71,12 @@
                 return row.first_name!='null'?row.first_name:'' +' '+ row.last_name!='null'?row.last_name:'';
               }
             },
-            {data: 'primary_email', name: 'primary_email'},
+             {data: 'email', name: 'email'},
          
             {data: 'membership', name: 'membership', "render" : function (data, type, row){
-                 if(row.membership)
-                  return row.membership.plan_name;
+                if(row.membership.length > 0)
+                  return row.membership[0].plan_name;
+              
                 return '';
 
               }
@@ -83,16 +84,20 @@
             
             {data: 'usage', name: 'usage', "render": function ( data, type, row ) {
                 
-              if(row.membership){
+              if(row.membership.length>0){
+                var html = '';
                 if(row.peak_hours_usage.length > 0){
-                  var html = '<b>Peak Hours:</b> '+ row.peak_hours_usage[0].peak_hours_used+'/'+ row.membership.included_peak_hours +'<br />';
-                  html += '<b>Off Peak Hours:</b> '+ row.off_peak_hours_usage[0].off_peak_hours_used+'/'+ row.membership.included_off_peak_hours +'<br />';  
+                  html += '<b>Peak Hours:</b> '+ (row.peak_hours_usage[0].peak_hours_used)/60+'/'+ row.membership[0].included_peak_hours +'<br />';
+                }
+                else if(row.off_peak_hours_usage.length > 0){
+                  html += '<b>Off Peak Hours:</b> '+ (row.off_peak_hours_usage[0].off_peak_hours_used)/60+'/'+ row.membership[0].included_off_peak_hours +'<br />';  
+                  }
                   return html;
                 }
-              }else{
+              else{
                 if(row.peak_hours_usage.length > 0){
-                  var html = '<b>Peak Hours:</b> '+ row.peak_hours_usage[0].peak_hours_used+'<br />';
-                  html += '<b>Off Peak Hours:</b> '+ row.off_peak_hours_usage[0].off_peak_hours_used+'<br />';  
+                  // var html = '<b>Peak Hours:</b> '+ row.peak_hours_usage[0].peak_hours_used+'<br />';
+                  var html = '<b>Off Peak Hours:</b> '+ (row.off_peak_hours_usage[0].off_peak_hours_used)/60+'<br />';  
                   return html;
                 }
               }
@@ -103,17 +108,23 @@
             },
             // {data: 'due', name: 'due'},
             {data: 'due', name: 'due', "render":function(data, type, row){
-              if(row.peak_hours_usage.length > 0){
-                 var peak_hour_charge = 60; 
+              var peak_hour_charge = 60; 
                  var off_peak_hour_charge = 45;
                  var discount_play = 15;  //in percent
                  
-                 var used_peak_hours = row.peak_hours_usage[0].peak_hours_used; 
-                 var used_off_peak_hours = row.off_peak_hours_usage[0].off_peak_hours_used; 
+                 var used_peak_hours = used_off_peak_hours = 0;
 
-                 if(row.membership){
-                  var included_peak_hours = row.membership.included_peak_hours;
-                  var included_off_peak_hours = row.membership.included_off_peak_hours;
+                 if(row.peak_hours_usage.length>0)
+                 {
+                    used_peak_hours = (row.peak_hours_usage[0].peak_hours_used)/60 
+                 }
+                if(row.off_peak_hours_usage.length>0){
+                    used_off_peak_hours = (row.off_peak_hours_usage[0].off_peak_hours_used)/60; 
+                }
+                 
+                 if(row.membership.length>0){
+                  var included_peak_hours = row.membership[0].included_peak_hours;
+                  var included_off_peak_hours = row.membership[0].included_off_peak_hours;
 
                   var sum = ((used_peak_hours - included_peak_hours)*peak_hour_charge) +  ((used_off_peak_hours - included_off_peak_hours)*off_peak_hour_charge);
                   var final = sum - (sum * discount_play)/100;
@@ -127,20 +138,16 @@
                   return '$'+final;
                  else
                   return  0; 
-
-              }
+             
               return '';
+              
               }
             },
 
           
-            {data: 'next_billing_date', name: 'next_billing_date'},
+           
             
-            {data: 'charge', name: 'charge', "render": function(data, type, row){
-              var html = '<a href="/dashboard/customers/charge/'+row.id+'" class="btn btn-primary"><i class="fa fa-dollar"></i> Charge </a>';
-              return html;
-              }
-            },
+           
             {data: 'action', name: 'action'},
             
         ]

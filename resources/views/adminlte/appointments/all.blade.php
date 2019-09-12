@@ -62,11 +62,11 @@
       "ajax": '{{env("APP_URL")}}dashboard/appointments/dt/all_appointments',
       columns: [
             {data: 'id', name: 'id'},
-            {data: 'name', name: 'name', "render": function ( data, type, row ) {
+            {data: 'first_name', name: 'name', "render": function ( data, type, row ) {
                 return row.customer.first_name!=''?row.customer.first_name:'' +' '+ row.customer.last_name!=''?row.customer.last_name:'';
               }
             },
-            {data: 'customer.primary_email', name: 'email'},
+            {data: 'customer.email', name: 'email'},
             {data: 'appointment', name: 'appointment', "render": function ( data, type, row ) {
                 return row.appointment_date +' <br/> '+ row.appointment_start_time + ' - ' + row.appointment_end_time;
               }

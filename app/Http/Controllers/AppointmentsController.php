@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
 use Yajra\DataTables\Facades\DataTables;
 use App\Appointment;
+use App\AppointmentResource;
 use App\Customer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -49,7 +50,10 @@ class AppointmentsController extends Controller
 
         // DB::connection()->enableQueryLog();
 
-        $appointments = Appointment::with('customer')->orderBy('appointment_date','desc')->get();
+        $appointments = Appointment::with('customer')
+                        ->where('acuity_action','scheduled')                        
+                        ->orderBy('appointment_date','desc')
+                        ->get();
         // $queries = DB::getQueryLog();
         //  allQuery($queries);
 
@@ -65,16 +69,20 @@ class AppointmentsController extends Controller
 
     public static function dumpAppointmentsIntoDB($appointment_id, $type)
     {
-        $client = new \GuzzleHttp\Client(['auth' => ['18168916','e884c92a5192058a3b473b15cef6b269']]);
+        $client = new \GuzzleHttp\Client(['auth' => ['18254030','ce8cd1b295e9160c55d09a5b4dd3b9de']]);
         $request = $client->get('https://acuityscheduling.com/api/v1/appointments/'.$appointment_id);
         $appointment = json_decode($request->getBody()->getContents());
         
+        // Log::info(json_encode($appointment));
 
         // pa($appointment); die;
 
         //Update Customer Table
 
-        $customer = Customer::where('primary_email',$appointment->email)->first();
+        $customer = User::where('email',$appointment->email)
+                        ->orWhere('email_2',$appointment->email)
+                        ->orWhere('email_3',$appointment->email)
+                        ->first();
         
         if($customer){
             if($customer->first_name==''){
@@ -89,79 +97,44 @@ class AppointmentsController extends Controller
             $customer = Customer::create([
                 'first_name' => $appointment->firstName,
                 'last_name' => $appointment->lastName,
-                'primary_email' => $appointment->email,
-                'membership_plan_id' => 0,
+                'email' => $appointment->email,
+                // 'membership_plan_id' => 0,
             ]);
             $customer_id = $customer->id;
         }
 
-        pa([
-            'first_name' => $appointment->firstName,
-            'last_name' => $appointment->lastName,
-            'phone_number' => $appointment->phone,
-            'email' => $appointment->email,
-            'appointment_date' => format_date($appointment->date,1),
-            'appointment_start_time' => format_date($appointment->time,8),
-            'appointment_end_time' => format_date($appointment->endTime,8),
-            'paid' => $appointment->paid,
-            'price' => $appointment->price,
-            'acuity_appointment_id' => $appointment->id,
-        ]);
+
 
         Log::info(format_date($appointment->date,1));
-        Log::info([
+            
+        $insertObj = [
             'customer_id' => $customer_id,
             'appointment_date' => format_date($appointment->date,1),
             'appointment_start_time' => format_date($appointment->time,8),
             'appointment_end_time' => format_date($appointment->endTime,8),
-            'is_paid' => $appointment->paid,
-            'amount' => $appointment->price,
+            'acuity_action' => $type,
+            'is_paid' => $appointment->paid=='no'?"0":"1",
+            'price' => $appointment->price,
+            'duration' => $appointment->duration,
+            'amount_paid' => $appointment->amountPaid,
+            'appointment_notes' => $appointment->notes,
             'acuity_appointment_id' => $appointment->id,
+            'acuity_appointment_type' => $appointment->appointmentTypeID,
+            'acuity_calendar_id' => $appointment->calendarID,
+        ];
+       
+        Log::info($insertObj);
+    
+        $dbAppointment = Appointment::create($insertObj);
+
+        // Create Appointment Resource
+        //Right now, resource_id is 1
+        
+        AppointmentResource::create([
+            'resource_id' => '1',
+            'appointment_id' => $dbAppointment->id
         ]);
 
-
-        $peak_days = ['Fri', 'Sat', 'Sun'];
-        $off_peak_days = ['Mon', 'Tue', 'Wed', 'Thu'];
-
-        $time1 = strtotime(format_date($appointment->time,8));
-        $time2 = strtotime(format_date($appointment->endTime,8));    
-        $usage = round(abs($time2 - $time1) / 3600,2);
-
-        Log::info('usage==>'. $usage);
-        Log::info('acuity_action==>'. $type);
-
-        $current_day =  format_date($appointment->date,10);
-
-        if(in_array($current_day, $peak_days)){
-            $peak_hours_used  = $usage;
-            $off_peak_hours_used  = 0;
-        }
-        else if(in_array($current_day, $off_peak_days)){
-            $peak_hours_used  = 0;
-            $off_peak_hours_used  = $usage;
-        }
-        // echo ; die;
-        
-
-
-        //if($type=='scheduled'){
-
-
-        // die('create dead for now');    
-            Appointment::create([
-                'customer_id' => $customer_id,
-                'appointment_date' => format_date($appointment->date,1),
-                'appointment_start_time' => format_date($appointment->time,8),
-                'appointment_end_time' => format_date($appointment->endTime,8),
-                'acuity_action' => $type,
-                'peak_hours_used' => $peak_hours_used,                
-                'off_peak_hours_used' => $off_peak_hours_used,                
-                'is_paid' => $appointment->paid,
-                'amount' => $appointment->price,
-                'acuity_appointment_id' => $appointment->id,
-            ]);
-        
-        
         Log::info('Webhook data fetched from API');
     }
 

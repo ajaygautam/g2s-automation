@@ -22,7 +22,9 @@ class Membership extends Model
       'drinks_discount',
       'events_discount',
       'monthly_due_on_season',
-      'monthly_due_off_season'
+      'monthly_due_off_season',
+      'plan_type',
+      'plan_code',
    ];
 
    public function customers(){
