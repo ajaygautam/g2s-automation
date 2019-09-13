@@ -43,13 +43,13 @@ Mysql
  7. sudo ufw allow mysql
  8 . Sudo mysql -uroot -p
 
-    Ju8$sp!042
+    
 
 
 
 Remote Login user
 
-9. CREATE USER 'administrator'@'%' IDENTIFIED BY 'Ju8$sp!082';
+9. CREATE USER 'administrator'@'%' IDENTIFIED BY 'xxxxxxxxxxxx';
 
 # grant privileges to table(s)
 	10. GRANT ALL PRIVILEGES ON *.* TO 'administrator'@'%' WITH GRANT OPTION;
