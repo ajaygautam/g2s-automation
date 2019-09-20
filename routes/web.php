@@ -91,9 +91,12 @@ Route::get('/charge','StripeController@charge');
 
 Route::get('payment_form/{plan_code}', function($plan_code){
     $plan = Membership::where('plan_code',$plan_code)->first();
-        $data = [];
+    $data = [];
     $data['plan'] = $plan;
+    $data['tax'] = config('settings.tax');
     return view('payment_form', $data);
 });
 
 Route::get('payment_success/{payment_id}', 'StripeController@paymentSuccessPage');
+Route::get('set_password/{token}', 'AuthBasicController@setPasswordForm');
+Route::post('set_password', 'AuthBasicController@setPassword');

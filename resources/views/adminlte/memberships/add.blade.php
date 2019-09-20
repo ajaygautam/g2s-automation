@@ -87,6 +87,17 @@
                     <input type="radio" name="plan_type" value="1">Custom
                   </label>
                 </div>
+               
+                <div class=" col-md-3  form-group {{ $errors->has('tax_exemption') ? ' has-error' : '' }}">
+                  <label for="tax_exemption" class="col-md-12 nopadding" >Tax Exemption</label>
+                 
+                  <label class="radio-inline">
+                    <input type="radio" name="tax_exemption" value="1" >Yes
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="tax_exemption" value="0">No
+                  </label>
+                </div>
    
                
                 

@@ -26,6 +26,7 @@
                   <th>ID</th>
                   <th>Name</th>
                   <th>Email</th>
+                  <th>Referred By</th>
                   <th>Plan</th>
                   <th> {{date('M')}} - Usage</th>
                   <th>Due</th>
@@ -72,6 +73,20 @@
               }
             },
              {data: 'email', name: 'email'},
+             {data: 'referral', name: 'referral', "render": function(data, type, row){
+              // console.log(row);
+              if(row.customer_plan){
+                if(row.customer_plan.referral!== "Other"){
+                 return row.customer_plan.referral
+                }
+                else{
+                  return row.customer_plan.referral_other
+                }
+              }   
+
+              return "";
+
+            }},
          
             {data: 'membership', name: 'membership', "render" : function (data, type, row){
                 if(row.membership.length > 0)

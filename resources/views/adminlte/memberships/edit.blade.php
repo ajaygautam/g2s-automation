@@ -79,8 +79,8 @@
 
                 <div class="col-md-6" style="min-height:75px">&nbsp;</div>
 
-                <label for="email" class="col-md-12 nopadding" >Plan Type</label>
                 <div class=" col-md-3  form-group {{ $errors->has('plan_type') ? ' has-error' : '' }}">
+                <label for="plan_type" class="col-md-12 nopadding" >Plan Type</label>
                  
                   <label class="radio-inline">
                     <input type="radio" name="plan_type" value="0" {{$membership->plan_type==0?"checked":""}}>Public
@@ -89,9 +89,20 @@
                     <input type="radio" name="plan_type" value="1" {{$membership->plan_type==1?"checked":""}}>Custom
                   </label>
                 </div>
-             
+
+                <div class=" col-md-3  form-group {{ $errors->has('tax_exemption') ? ' has-error' : '' }}">
+                  <label for="tax_exemption" class="col-md-12 nopadding" >Tax Exemption</label>
+                 
+                  <label class="radio-inline">
+                    <input type="radio" name="tax_exemption" value="1" {{$membership->tax_exemption==1?"checked":""}} >Yes
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="tax_exemption" value="0" {{$membership->tax_exemption==0?"checked":""}}>No
+                  </label>
+                </div>
+
+                <label for="email" class="col-md-12">Plan Link</label>
                 
-                <label for="email" class="col-md-12 nopadding" >Plan Link</label>
                 <div class="col-md-12 form-group">
                   <div class="form-control">
                       {{url('payment_form/'.$membership->plan_code)}}
@@ -114,22 +125,19 @@
 
 @push('styles')
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<style>
+  .nopadding {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+</style>
 @endpush
-   
-   
+
+
 @push('scripts')
 
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-  <script>
-    $( function() {
-            $( "#trial_start_date" ).datepicker();
-            $( "#billing_start_date" ).datepicker();
-            $( "#termination_date" ).datepicker();
-        } 
-    );
-  </script>
 
 @endpush
 

@@ -19,7 +19,7 @@ class AppointmentsController extends Controller
 
     public function __construct()
     {
-        $this->httpOauth = new HttpHelper();
+        $this->middleware('auth');
     }
 
     public function index(){

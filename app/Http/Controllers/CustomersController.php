@@ -11,6 +11,12 @@ use Stripe;
 
 class CustomersController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index(){
         // $this->authorize('all', User::class);
          
@@ -77,7 +83,7 @@ class CustomersController extends Controller
      public function datatablesAllCustomers()
      {
         DB::connection()->enableQueryLog();
-        $customers = User::with('membership','peak_hours_usage','off_peak_hours_usage')->orderBy('id','desc')->get();
+        $customers = User::with('customerPlan','membership','peak_hours_usage','off_peak_hours_usage')->orderBy('id','desc')->get();
         $queries = DB::getQueryLog();
         // allQuery($queries);
         // pa($customers);

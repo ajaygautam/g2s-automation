@@ -36,6 +36,7 @@ class User extends Authenticatable
         'email_3',
         'notes',
         'stripe_customer_id',
+        'set_password_hash'
     ];
 
 
@@ -60,27 +61,84 @@ class User extends Authenticatable
         );
     }
 
+    public function customerPlan(){
+        return $this->hasOne('App\CustomerPlan','customer_id','id');
+    }
+
 
     public function peak_hours_usage(){
         return $this->hasMany('App\Appointment', 'customer_id', 'id')
-            ->where('acuity_action','scheduled')
-            // ->where(DB::raw('Month(appointment_date)'),date("n",strtotime("-1 month")))
-            ->whereIn(DB::raw('dayname(appointment_date)'),\config('settings.peak_days'))
-            ->selectRaw('SUM(duration) as peak_hours_used,customer_id')
+            ->where(function($query){
+             $query->whereIn(DB::raw('dayname(appointment_date)'),\config('settings.peak_days'));
+             $query->orWhereIn('appointment_date',\config('settings.holiday_dates'));
+            })
+            
+            ->selectRaw('SUM(duration)/60 as peak_hours_used,customer_id')
             ->groupBy(['customer_id'])
             ;
     }
     
     public function off_peak_hours_usage(){
         return $this->hasMany('App\Appointment', 'customer_id', 'id')
-            ->where('acuity_action','scheduled')
-            // ->where(DB::raw('Month(appointment_date)'),date("n",strtotime("-1 month")))
-            ->whereIn(DB::raw('dayname(appointment_date)'),\config('settings.off_peak_days'))
-            ->selectRaw('SUM(duration) as off_peak_hours_used, customer_id')
+            ->where(function($query){
+                $query->whereIn(DB::raw('dayname(appointment_date)'),\config('settings.off_peak_days'));
+                $query->WhereNotIn('appointment_date',\config('settings.holiday_dates'));
+            })    
+            ->selectRaw('SUM(duration)/60 as off_peak_hours_used, customer_id')
             ->groupBy(['customer_id'])
             ;
 
     }
+
+    // public function peak_hours_usage(){
+    //     return $this->hasMany('App\Appointment', 'customer_id', 'id')
+    //         // ->where('acuity_action','scheduled')
+    //         // ->where(DB::raw('Month(appointment_date)'),date("n",strtotime("-1 month")))
+    //         ->whereIn(DB::raw('dayname(appointment_date)'),\config('settings.peak_days'))
+    //         ->orWhereIn('appointment_date',\config('settings.holiday_dates'))
+    //         ->selectRaw('SUM(duration) as peak_hours_used,customer_id')
+    //         ->groupBy(['customer_id'])
+    //         ;
+    // }
+    
+    // public function off_peak_hours_usage(){
+    //     return $this->hasMany('App\Appointment', 'customer_id', 'id')
+    //         // ->where('acuity_action','scheduled')
+    //         // ->where(DB::raw('Month(appointment_date)'),date("n",strtotime("-1 month")))
+    //         ->whereIn(DB::raw('dayname(appointment_date)'),\config('settings.off_peak_days'))
+    //         ->orWhereNotIn('appointment_date',\config('settings.holiday_dates'))
+    //         ->selectRaw('SUM(duration) as off_peak_hours_used, customer_id')
+    //         ->groupBy(['customer_id'])
+    //         ;
+
+    // }
+
+
+    /*
+    SELECT id,customer_id, duration, appointment_date, DAYNAME(appointment_date) 
+    FROM `appointments` 
+    WHERE 
+    (
+    DAYNAME(appointment_date) IN ('Friday', 'Saturday', 'Sunday') 
+    OR `appointment_date` IN ('2019-07-04', '2019-09-13', '2019-09-14', '2019-09-15', '2019-09-16', '2019-09-17', '2019-09-18', '2019-09-20') 
+    )
+    AND `appointments`.`customer_id` IN ('7') 
+    #GROUP BY `customer_id`
+
+    ;
+
+    SELECT 
+    id,customer_id, duration, appointment_date, DAYNAME(appointment_date) 
+    FROM `appointments` 
+    WHERE 
+    (
+    DAYNAME(appointment_date) IN ('Monday', 'Tuesday', 'Wednesday', 'Thursday') 
+    AND `appointment_date` NOT IN ('2019-07-04', '2019-09-13', '2019-09-14', '2019-09-15', '2019-09-16', '2019-09-17', '2019-09-18','2019-09-20') 
+    )
+    AND `appointments`.`customer_id` IN ('7') 
+
+    ;
+    */ 
 
     
 }

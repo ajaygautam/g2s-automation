@@ -9,6 +9,11 @@ use Yajra\DataTables\Facades\DataTables;
 
 class MembershipsController extends Controller
 {
+   public function __construct()
+   {
+       $this->middleware('auth');
+   }
+
     public function index(){
         // $this->authorize('all', User::class);
         
@@ -56,6 +61,7 @@ class MembershipsController extends Controller
             'monthly_due_on_season' => $request->monthly_due_on_season ,
             'monthly_due_off_season' => $request->monthly_due_off_season,
             'plan_type' => $request->plan_type ,
+            'tax_exemption' => $request->tax_exemption ,
             
         ]);
 
@@ -100,6 +106,7 @@ class MembershipsController extends Controller
         $membership->monthly_due_on_season = $request->monthly_due_on_season ;
         $membership->monthly_due_off_season = $request->monthly_due_off_season;
         $membership->plan_type = $request->plan_type ;
+        $membership->tax_exemption = $request->tax_exemption ;
 
         if($membership->plan_code==''){
             $plan_code_seed = $membership->id.strtotime($membership->created_at);

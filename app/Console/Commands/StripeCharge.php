@@ -73,10 +73,10 @@ class StripeCharge extends Command
                     $used_peak_hours = $used_off_peak_hours = 0;
                 
                     if(count($customer->peak_hours_usage)){
-                        $used_peak_hours = ($customer->peak_hours_usage[0]->peak_hours_used)/60; // covert minutes to hours
+                        $used_peak_hours = ($customer->peak_hours_usage[0]->peak_hours_used); // covert minutes to hours
                     }
                     if(count($customer->off_peak_hours_usage)){
-                        $used_off_peak_hours = ($customer->off_peak_hours_usage[0]->off_peak_hours_used)/60; //convert minutes to hours
+                        $used_off_peak_hours = ($customer->off_peak_hours_usage[0]->off_peak_hours_used); //convert minutes to hours
                     }
                 
                     $included_peak_hours = $customer->membership[0]->included_peak_hours;

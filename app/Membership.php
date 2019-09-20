@@ -25,6 +25,7 @@ class Membership extends Model
       'monthly_due_off_season',
       'plan_type',
       'plan_code',
+      'tax_exemption',
    ];
 
    public function customers(){

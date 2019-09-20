@@ -18,5 +18,7 @@ class CustomerPlan extends Model
         'plan_hold_starts_on',
         'plan_hold_ends_on',
         'location_code',
+        'referral',
+        'referral_other',
     ];
 }

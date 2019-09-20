@@ -19,7 +19,22 @@ use App\Http\Controllers\StripeController;
 Route::middleware('auth:api')->group( function () {
     Route::prefix('/v1/')->group(function () {
         Route::get('/customers/details/{id}', 'Api\ApiCustomerController@getCustomerDetails');
+    
+
+
+        //get USER
+        Route::group(['prefix' => 'user'], function() {
+            Route::get('/', function() {
+                return response()->json(request()->user());
+            });
+        });
+    
+    
     });
+
+   
+
+
 });
 
 Route::post('/acuity_post', function(Request $request){

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Customer;
 use App\CustomerPlan;
+use App\Mail\SetPasswordMailer;
 use App\Membership;
 use App\Payment;
 use App\PaymentMethod;
@@ -11,8 +12,11 @@ use App\Resource;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash as IlluminateHash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
+
 use Stripe\Charge;
 use Stripe\Stripe;
 use Stripe\Token as StripeToken;
@@ -20,7 +24,7 @@ use Stripe\Token as StripeToken;
 
 class StripeController extends Controller
 {
-
+    
     public $stripe_response = [
         'customer_created' => '{"id":"evt_1F959cAye9PHCVermiJbgsuO","object":"event","api_version":"2019-05-16","created":1566199186,"data":{"object":{"id":"cus_FeNvl0jMer5H01","object":"customer","account_balance":0,"address":null,"balance":0,"created":1566199186,"currency":null,"default_source":null,"delinquent":false,"description":null,"discount":null,"email":"sarab@sdnatech.com","invoice_prefix":"BB836C02","invoice_settings":{"custom_fields":null,"default_payment_method":null,"footer":null},"livemode":false,"metadata":[],"name":null,"phone":null,"preferred_locales":[],"shipping":null,"sources":{"object":"list","data":[],"has_more":false,"total_count":0,"url":"\/v1\/customers\/cus_FeNvl0jMer5H01\/sources"},"subscriptions":{"object":"list","data":[{"id":"sub_FeNvGLPZDjV7T7","object":"subscription","application_fee_percent":null,"billing":"charge_automatically","billing_cycle_anchor":1566199187,"billing_thresholds":null,"cancel_at":null,"cancel_at_period_end":false,"canceled_at":null,"collection_method":"charge_automatically","created":1566199187,"current_period_end":1568877587,"current_period_start":1566199187,"customer":"cus_FeNvl0jMer5H01","days_until_due":null,"default_payment_method":"pm_1F959aAye9PHCVerToXy91a8","default_source":null,"default_tax_rates":[],"discount":null,"ended_at":null,"items":{"object":"list","data":[{"id":"si_FeNvoBfiMTWqDK","object":"subscription_item","billing_thresholds":null,"created":1566199187,"metadata":[],"plan":{"id":"plan_Fc8mbkveh4Qnan","object":"plan","active":true,"aggregate_usage":null,"amount":25000,"billing_scheme":"per_unit","created":1565681546,"currency":"usd","interval":"month","interval_count":1,"livemode":false,"metadata":[],"nickname":"Monthly","product":"prod_Fc8lbdYB80MaKb","tiers":null,"tiers_mode":null,"transform_usage":null,"trial_period_days":null,"usage_type":"licensed"},"quantity":1,"subscription":"sub_FeNvGLPZDjV7T7","tax_rates":[]}],"has_more":false,"total_count":1,"url":"\/v1\/subscription_items?subscription=sub_FeNvGLPZDjV7T7"},"latest_invoice":"in_1F959bAye9PHCVerIxT0An0x","livemode":false,"metadata":[],"pending_setup_intent":null,"plan":{"id":"plan_Fc8mbkveh4Qnan","object":"plan","active":true,"aggregate_usage":null,"amount":25000,"billing_scheme":"per_unit","created":1565681546,"currency":"usd","interval":"month","interval_count":1,"livemode":false,"metadata":[],"nickname":"Monthly","product":"prod_Fc8lbdYB80MaKb","tiers":null,"tiers_mode":null,"transform_usage":null,"trial_period_days":null,"usage_type":"licensed"},"quantity":1,"schedule":null,"start":1566199187,"start_date":1566199187,"status":"active","tax_percent":null,"trial_end":null,"trial_start":null}],"has_more":false,"total_count":1,"url":"\/v1\/customers\/cus_FeNvl0jMer5H01\/subscriptions"},"tax_exempt":"none","tax_ids":{"object":"list","data":[],"has_more":false,"total_count":0,"url":"\/v1\/customers\/cus_FeNvl0jMer5H01\/tax_ids"},"tax_info":null,"tax_info_verification":null}},"livemode":false,"pending_webhooks":1,"request":{"id":"req_LGYVcefkxymi4o","idempotency_key":null},"type":"customer.created"} ',
         'customer_subscription_created' => '{"id":"evt_1F959dAye9PHCVer4jMtt70P","object":"event","api_version":"2019-05-16","created":1566199187,"data":{"object":{"id":"sub_FeNvGLPZDjV7T7","object":"subscription","application_fee_percent":null,"billing":"charge_automatically","billing_cycle_anchor":1566199187,"billing_thresholds":null,"cancel_at":null,"cancel_at_period_end":false,"canceled_at":null,"collection_method":"charge_automatically","created":1566199187,"current_period_end":1568877587,"current_period_start":1566199187,"customer":"cus_FeNvl0jMer5H01","days_until_due":null,"default_payment_method":"pm_1F959aAye9PHCVerToXy91a8","default_source":null,"default_tax_rates":[],"discount":null,"ended_at":null,"items":{"object":"list","data":[{"id":"si_FeNvoBfiMTWqDK","object":"subscription_item","billing_thresholds":null,"created":1566199187,"metadata":[],"plan":{"id":"plan_Fc8mbkveh4Qnan","object":"plan","active":true,"aggregate_usage":null,"amount":25000,"billing_scheme":"per_unit","created":1565681546,"currency":"usd","interval":"month","interval_count":1,"livemode":false,"metadata":[],"nickname":"Monthly","product":"prod_Fc8lbdYB80MaKb","tiers":null,"tiers_mode":null,"transform_usage":null,"trial_period_days":null,"usage_type":"licensed"},"quantity":1,"subscription":"sub_FeNvGLPZDjV7T7","tax_rates":[]}],"has_more":false,"total_count":1,"url":"\/v1\/subscription_items?subscription=sub_FeNvGLPZDjV7T7"},"latest_invoice":"in_1F959bAye9PHCVerIxT0An0x","livemode":false,"metadata":[],"pending_setup_intent":null,"plan":{"id":"plan_Fc8mbkveh4Qnan","object":"plan","active":true,"aggregate_usage":null,"amount":25000,"billing_scheme":"per_unit","created":1565681546,"currency":"usd","interval":"month","interval_count":1,"livemode":false,"metadata":[],"nickname":"Monthly","product":"prod_Fc8lbdYB80MaKb","tiers":null,"tiers_mode":null,"transform_usage":null,"trial_period_days":null,"usage_type":"licensed"},"quantity":1,"schedule":null,"start":1566199187,"start_date":1566199187,"status":"incomplete","tax_percent":null,"trial_end":null,"trial_start":null}},"livemode":false,"pending_webhooks":1,"request":{"id":"req_LGYVcefkxymi4o","idempotency_key":null},"type":"customer.subscription.created"} ',
@@ -253,17 +257,17 @@ class StripeController extends Controller
     public function StripeSubscriptionPost(Request $request){
        
        $allRequests = $request->all();
-        // pa($allRequests);
-        // die;
+
+    //    pa($allRequests);
+
+
+    //    die;
+    
        $stripeToken = $request->stripeToken;
        Stripe::setApiKey(env('STRIPE_SECRET'));
 
        $membership = Membership::where('plan_code',$request->plan_code)->first();
        $membership_cost = $membership->monthly_due_on_season;
-        // pa($membership);
-
-        // die;
-    //    $customer = Customer::where('primary_email', $request->primary_email)->get();
        $customer = User::where('email', $request->primary_email)->get();
 
        if($customer->count()== 0){
@@ -283,6 +287,13 @@ class StripeController extends Controller
                         'first_name' => $name[0],
                         'last_name' => $name[count($name)-1],
                         'stripe_customer_id' => $stripeCustomer->id,
+                        'address'=>$request->address,
+                        'city'=>$request->city,
+                        'state'=>$request->state,
+                        'county'=>$request->county,
+                        'country'=>$request->country,
+                        'zipcode'=>$request->zipcode,
+                        'set_password_hash'=>md5(str_random(8)),
                     ]
                 );
 
@@ -291,13 +302,15 @@ class StripeController extends Controller
                     'membership_plan_id' => $membership->id,
                     'plan_starts_on' => $plan_starts_on ,
                     'plan_ends_on' => $plan_ends_on,
+                    'referral' => $request->referral,
+                    'referral_other' => $request->referral_other,
                 ]);
 
+                Mail::to($customer->email)
+                    ->send(new SetPasswordMailer($customer));
                 
             }
        }
-      
-        
 
         $charge = \Stripe\Charge::create([
             "amount" => $membership_cost * 100, // convert to cents - stripe accepts in cents
@@ -346,8 +359,9 @@ class StripeController extends Controller
         $customers = User::with('membership','peak_hours_usage','off_peak_hours_usage')
                         ->get();
         
-        // $queries = DB::getQueryLog();
+        $queries = DB::getQueryLog();
         // allQuery($queries);
+        
         // die;
 
        
