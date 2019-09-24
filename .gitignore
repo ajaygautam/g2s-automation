@@ -1,5 +1,8 @@
 /node_modules
-/storage
+/storage/app
+/storage/framework
+/storage/logs
+/vendor
 /.idea
 /.vscode
 /.vagrant

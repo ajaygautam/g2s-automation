@@ -93,7 +93,25 @@ Route::get('payment_form/{plan_code}', function($plan_code){
     $plan = Membership::where('plan_code',$plan_code)->first();
     $data = [];
     $data['plan'] = $plan;
+
     $data['tax'] = config('settings.tax');
+    
+    $isPeakMonth = 0;
+    $peak_months = ['01','02','03','04','09','10','11','12'];
+    $off_peak_months = ['05','06','07','08'];
+    $current_month = date('m');
+
+    if(in_array($current_month,$peak_months)){
+        $isPeakMonth = 1;
+    }
+    $cost = $isPeakMonth==1?$plan->monthly_due_on_season:$plan->monthly_due_off_season;
+
+    $data['cost'] = $cost;
+
+    if($plan->tax_exemption==1){
+        $data['tax'] = 0;
+    }
+
     return view('payment_form', $data);
 });
 
