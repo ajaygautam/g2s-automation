@@ -52,7 +52,7 @@ class StripeController extends Controller
     );
 
 
-        die('this is called');
+        // die('this is called');
 
        $stripeToken = $request->stripeToken;
        Stripe::setApiKey(env('STRIPE_SECRET'));
@@ -69,12 +69,30 @@ class StripeController extends Controller
        if(in_array($current_month,$peak_months)){
            $isPeakMonth = 1;
        }
-       $cost = $isPeakMonth==1?$membership->monthly_due_on_season:$membership->monthly_due_off_season;
+      // $cost = $isPeakMonth==1?$membership->monthly_due_on_season:$membership->monthly_due_off_season;
        $tax = config('settings.tax');
        
        if($membership->tax_exemption==1){
             $tax = 0;
         }
+
+        if($isPeakMonth==1)
+        {
+            if($request->yearly_commitment == 1){
+                $cost = $membership->monthly_due_on_season_yc; 
+            }   
+            else{
+                $cost = $membership->monthly_due_on_season_mc; 
+            }
+        } else{
+            if($request->yearly_commitment == 1){
+                $cost = $membership->monthly_due_off_season_yc; 
+            }   
+            else{
+                $cost = $membership->monthly_due_off_season_mc; 
+            }
+        }
+
 
         $membership_cost = $cost + ($cost*$tax)/100;
 
@@ -105,6 +123,7 @@ class StripeController extends Controller
                         'country'=>$request->country,
                         'zipcode'=>$request->zipcode,
                         'set_password_hash'=>md5(str_random(8)),
+                        'home_location_code'=>$membership->location_code,
                     ]
                 );
 
@@ -115,6 +134,8 @@ class StripeController extends Controller
                     'plan_ends_on' => $plan_ends_on,
                     'referral' => $request->referral,
                     'referral_other' => $request->referral_other,
+                    'location_code' => $membership->location_code,
+                    'yearly_commitment' => $request->yearly_commitment,
                 ]);
 
                 // Mail::to($customer->email)

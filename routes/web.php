@@ -104,9 +104,19 @@ Route::get('payment_form/{plan_code}', function($plan_code){
     if(in_array($current_month,$peak_months)){
         $isPeakMonth = 1;
     }
-    $cost = $isPeakMonth==1?$plan->monthly_due_on_season:$plan->monthly_due_off_season;
 
-    $data['cost'] = $cost;
+    if($isPeakMonth==1)
+    {
+        $monthly_due_season_yc = $plan->monthly_due_on_season_yc; 
+        $monthly_due_season_mc = $plan->monthly_due_on_season_mc; 
+    } else{
+        $monthly_due_season_yc = $plan->monthly_due_off_season_yc; 
+        $monthly_due_season_mc = $plan->monthly_due_off_season_mc; 
+    }
+
+
+    $data['monthly_due_season_yc'] = $monthly_due_season_yc;
+    $data['monthly_due_season_mc'] = $monthly_due_season_mc;
 
     if($plan->tax_exemption==1){
         $data['tax'] = 0;

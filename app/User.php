@@ -36,7 +36,8 @@ class User extends Authenticatable
         'email_3',
         'notes',
         'stripe_customer_id',
-        'set_password_hash'
+        'set_password_hash',
+        'home_location_code'
     ];
 
 

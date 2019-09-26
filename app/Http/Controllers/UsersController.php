@@ -61,16 +61,18 @@ class UsersController extends Controller
         $this->authorize('all', User::class);
         
         $user = \App\User::create([
-            'name' => $request->name,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
             'email' => $request->email,
             'user_group_id' => $request->user_group_id,
+            'home_location_code' => $request->home_location_code,
             'password' => \Illuminate\Support\Facades\Hash::make($request->password),
         ]);
         
        
         
         $request->session()->flash('success_message', 'User created successfully');
-        return redirect("/users");
+        return redirect("/dashboard/users");
         
     }
     
@@ -102,8 +104,10 @@ class UsersController extends Controller
 
         $user = \App\User::find($user_id);
         
-        $user->name = $request->name;
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
         $user->email = $request->email;
+        $user->home_location_code = $request->home_location_code;
         
         if($request->password!='')
             $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
@@ -114,7 +118,7 @@ class UsersController extends Controller
         
 
         $request->session()->flash('success_message', 'User updated successfully');
-        return redirect("/users");
+        return redirect("/dashboard/users");
         
     }
     
@@ -127,12 +131,12 @@ class UsersController extends Controller
             $user->delete();
             
             $request->session()->flash('success_message', 'User deleted successfully');
-            return redirect("/users");
+            return redirect("/dashboard/users");
         }
         else
         {
             $request->session()->flash('error_message', 'User not found');
-            return redirect("/users");
+            return redirect("/dashboard/users");
         }
         
 
@@ -214,7 +218,7 @@ class UsersController extends Controller
 
     public function datatables_all_users()
     {
-        $users = \App\User::select(['id','name','email']);
+        $users = \App\User::select(['id','first_name','last_name','email', 'home_location_code']);
 
         return DataTables::of($users)
             ->addColumn('action', function ($user) {

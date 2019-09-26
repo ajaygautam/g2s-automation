@@ -180,32 +180,32 @@
                     </div>
                     <hr class="m-0 mb-1">
                     <div class="d-flex justify-content-between ">
-                        <span>Monthly Due - On Season</span> <span><strong>${{$plan->monthly_due_on_season}}</strong></span>
+                        <span>Monthly Due - Yearly Commitment - On Season</span> <span><strong>${{$plan->monthly_due_on_season_yc}}</strong></span>
                     </div>
                     <div class="d-flex justify-content-between ">
-                        <span>Monthly Due - Off Season</span> <span><strong>${{$plan->monthly_due_off_season}}</strong></span>
+                        <span>Monthly Due - Yearly Commitment -  Off Season</span> <span><strong>${{$plan->monthly_due_off_season_yc}}</strong></span>
+                    </div>
+                    <hr class="m-0 mb-1">
+                    <div class="d-flex justify-content-between ">
+                        <span>Monthly Due - Monthly Commitment - On Season</span> <span><strong>${{$plan->monthly_due_on_season_mc}}</strong></span>
+                    </div>
+                    <div class="d-flex justify-content-between ">
+                        <span>Monthly Due - Monthly Commitment -  Off Season</span> <span><strong>${{$plan->monthly_due_off_season_mc}}</strong></span>
                     </div>
                 </div>
             </div>
             
             <label>Commitment Type</label>    
-<!--             
-            <div class="form-group">
-                <label class="radio-inline"> 
-                    <input type="radio" name="yearly_commitment" value='1' > Yearly
-                    <input type="radio" name="yearly_commitment" value='0' > Monthly
-                </label>
-            </div> -->
 
             <div class="form-group">
                 <div class="form-check-inline">
                     <label class="form-check-label">
-                        <input type="radio" class="form-check-input" name="yearly_commitment" value='1' value={{old('state','CT','1')=="1"?"checked":""}}> Yearly
+                        <input type="radio" class="form-check-input" name="yearly_commitment" value='1' {{old('yearly_commitment','1')==1?"checked=checked":""}}> Yearly
                     </label>
                 </div>
                 <div class="form-check-inline">
                     <label class="form-check-label">
-                        <input type="radio" class="form-check-input" name="yearly_commitment" value='0' value={{old('state','CT')=="0"?"checked":""}}> Monthly
+                        <input type="radio" class="form-check-input" name="yearly_commitment" value='0' {{old('yearly_commitment','1')=="0"?"checked=checked":""}}> Monthly
                     </label>
                 </div>
             </div>
@@ -213,21 +213,25 @@
             <div class="form-group">
                 <label>Payment details</label>    
                 <div class="details-wrap">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Fees</span> <span><strong>${{$cost}}</strong></span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Tax ({{$tax}}%) </span> <span><strong>${{($cost*$tax)/100}}</strong></span>
-                        </div>
-                        <hr class="m-0 mb-1">
-                        <div class="d-flex justify-content-between ">
-                            <span>Total</span> <span><strong>
-                                $<?php echo 
-                                    $cost + ($cost*$tax)/100;
-                                ?>
-                            </strong></span>
-                        </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Fees</span> <span id="yearly_cost"><strong>${{$monthly_due_season_yc}}</strong></span> <span id="monthly_cost"><strong>${{$monthly_due_season_mc}}</strong></span>
                     </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tax ({{$tax}}%) </span> <span id="yearly_tax"><strong>${{($monthly_due_season_yc*$tax)/100}}</strong></span><span id="monthly_tax"><strong>${{($monthly_due_season_mc*$tax)/100}}</strong></span>
+                    </div>
+                    <hr class="m-0 mb-1">
+                    <div class="d-flex justify-content-between ">
+                        <span>Total</span> <span id="yearly_total"><strong>
+                            $<?php echo 
+                                $monthly_due_season_yc + ($monthly_due_season_yc*$tax)/100;
+                            ?>
+                        </strong></span><span id="monthly_total"><strong>
+                            $<?php echo 
+                                $monthly_due_season_mc + ($monthly_due_season_mc*$tax)/100;
+                            ?>
+                        </strong></span>
+                    </div>
+                </div>
             </div>
 
 
@@ -260,7 +264,7 @@
 
 
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="tandccheck"  >
+                <input type="checkbox" class="form-check-input" id="tandccheck" name="tandccheck" >
                 <label class="form-check-label" for="tandccheck">I agree with terms and conditions</label>
             </div>
 
@@ -271,6 +275,47 @@
     <script src="https://js.stripe.com/v3/"></script>
     <script>
         $(document).ready(function() {
+            
+            if($('input:radio[name="yearly_commitment"]').val()==1)
+            {
+                $("#yearly_cost").show();
+                $("#yearly_tax").show();
+                $("#yearly_total").show();
+                $("#monthly_cost").hide();
+                $("#monthly_tax").hide();
+                $("#monthly_total").hide();
+            }else{
+                $("#yearly_cost").hide();
+                $("#yearly_tax").hide();
+                $("#yearly_total").hide();
+                $("#monthly_cost").show();
+                $("#monthly_tax").show();
+                $("#monthly_total").show();
+
+            }
+
+
+            $('input:radio[name="yearly_commitment"]').change(
+                function(){
+                    if ($(this).val() == '1') {
+                        $("#yearly_cost").show();
+                        $("#yearly_tax").show();
+                        $("#yearly_total").show();
+                        $("#monthly_cost").hide();
+                        $("#monthly_tax").hide();
+                        $("#monthly_total").hide();
+                    }
+                    else {
+                        $("#yearly_cost").hide();
+                        $("#yearly_tax").hide();
+                        $("#yearly_total").hide();
+                        $("#monthly_cost").show();
+                        $("#monthly_tax").show();
+                        $("#monthly_total").show();
+
+                    }
+            });
+
         //     var password = document.getElementById("password") ;
         //     var  confirm_password = document.getElementById("cpassword");
 

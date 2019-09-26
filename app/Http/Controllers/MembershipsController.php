@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Membership;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 
@@ -34,8 +35,11 @@ class MembershipsController extends Controller
      }
 
      public function create(){
+
         $view_elements = [];
          
+        $view_elements['location_code'] = Auth::user()->home_location_code; 
+
         $view_elements['page_title'] = 'Memberships'; 
         $view_elements['component'] = 'memberships'; 
         $view_elements['menu'] = 'memberships'; 
@@ -58,10 +62,13 @@ class MembershipsController extends Controller
             'play_discount' => $request->play_discount ,
             'food_discount' => $request->food_discount ,
             'events_discount' => $request->events_discount ,
-            'monthly_due_on_season' => $request->monthly_due_on_season ,
-            'monthly_due_off_season' => $request->monthly_due_off_season,
+            'monthly_due_on_season_yc' => $request->monthly_due_on_season_yc,
+            'monthly_due_off_season_yc' => $request->monthly_due_off_season_yc,
+            'monthly_due_on_season_mc' => $request->monthly_due_on_season_mc,
+            'monthly_due_off_season_mc' => $request->monthly_due_off_season_mc,
             'plan_type' => $request->plan_type ,
             'tax_exemption' => $request->tax_exemption ,
+            'location_code' => $request->location_code ,
             
         ]);
 
@@ -103,10 +110,13 @@ class MembershipsController extends Controller
         $membership->play_discount = $request->play_discount ;
         $membership->food_discount = $request->food_discount ;
         $membership->events_discount = $request->events_discount ;
-        $membership->monthly_due_on_season = $request->monthly_due_on_season ;
-        $membership->monthly_due_off_season = $request->monthly_due_off_season;
+        $membership->monthly_due_on_season_yc = $request->monthly_due_on_season_yc ;
+        $membership->monthly_due_off_season_yc = $request->monthly_due_off_season_yc;
+        $membership->monthly_due_on_season_mc = $request->monthly_due_on_season_mc ;
+        $membership->monthly_due_off_season_mc = $request->monthly_due_off_season_mc;
         $membership->plan_type = $request->plan_type ;
         $membership->tax_exemption = $request->tax_exemption ;
+        $membership->location_code = $request->location_code ;
 
         if($membership->plan_code==''){
             $plan_code_seed = $membership->id.strtotime($membership->created_at);

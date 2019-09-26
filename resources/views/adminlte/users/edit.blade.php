@@ -18,9 +18,14 @@
               <input type="hidden" name="_method" value="PUT" />
               {{csrf_field()}}
               <div class="box-body">
-                <div class="form-group {{ $errors->has('name') ? ' has-error' : '' }}">
-                  <label for="name">Name</label>
-                  <input type="text" class="form-control" id="name" name="name" placeholder="" value="{{$user->name}}" required autofocus>
+                <div class="form-group {{ $errors->has('first_name') ? ' has-error' : '' }}">
+                  <label for="name">First Name</label>
+                  <input type="text" class="form-control" id="first_name" name="first_name" placeholder="" value="{{$user->first_name}}" required autofocus>
+                </div>
+
+                <div class="form-group {{ $errors->has('last_name') ? ' has-error' : '' }}">
+                  <label for="name">Last Name</label>
+                  <input type="text" class="form-control" id="last_name" name="last_name" placeholder="" value="{{$user->last_name}}" required>
                 </div>
 
                 <div class="form-group {{ $errors->has('email') ? ' has-error' : '' }}">
@@ -33,6 +38,14 @@
                   <input type="text" class="form-control" id="password" name="password" value="" placeholder="" >
                 </div>
                   
+                    
+                <div class="form-group {{ $errors->has('home_location_code') ? ' has-error' : '' }}">
+                  <label for="password">Home Location Code</label>
+                  <input type="text" class="form-control" id="home_location_code" name="home_location_code" value="{{$user->home_location_code}}" placeholder="" >
+                </div>
+                  
+
+
                 <div class="form-group {{ $errors->has('user_group_id') ? ' has-error' : '' }}">
                   <label for="user_type">User Type</label>
                   <select name="user_group_id" id="user_group_id" class="form-control">

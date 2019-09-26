@@ -16,7 +16,7 @@
         <div class="box">
             <div class="box-header">
               <h3 class="box-title">All Users</h3>
-              <a href="{{url('/users/create')}}" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Add New User</a>  
+              <a href="{{url('/dashboard/users/create')}}" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Add New User</a>  
             </div>
             <!-- /.box-header -->
             <div class="box-body">
@@ -26,6 +26,7 @@
                   <th>ID</th>
                   <th>Name</th>
                   <th>email</th>
+                  <th>Home Location Code</th>
                   <th>Actions</th>
                   
                 </tr>
@@ -61,8 +62,11 @@
       "ajax": '{{url("/dashboard/users/dt/all_users")}}',
       columns: [
             {data: 'id', name: 'id'},
-            {data: 'name', name: 'name'},
+            {data: 'name', name: 'name', "render":function(data, type, row){
+                return row.first_name+' '+row.last_name; 
+            }},
             {data: 'email', name: 'email'},
+            {data: 'home_location_code', name: 'home_location_code'},
             {data: 'action', name: 'action'},
             
         ]

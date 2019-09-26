@@ -14,22 +14,29 @@
             </div>
             <!-- /.box-header -->
             <!-- form start -->
-            <form role="form" action="{{ url('/users/')}}" method="post">
+            <form role="form" action="{{ url('/dashboard/users/')}}" method="post">
               {{csrf_field()}}
               <div class="box-body">
-                <div class="form-group {{ $errors->has('name') ? ' has-error' : '' }}">
-                  <label for="name">Name</label>
-                  <input type="text" class="form-control" id="name" name="name" placeholder="" value="{{old('name')}}" required autofocus>
+                <div class="form-group {{ $errors->has('first_name') ? ' has-error' : '' }}">
+                  <label for="name">First Name</label>
+                  <input type="text" class="form-control" id="first_name" name="first_name" placeholder="" value="{{old('first_name')}}" required autofocus>
+                </div>
+                
+                <div class="form-group {{ $errors->has('last_name') ? ' has-error' : '' }}">
+                  <label for="name">Last Name</label>
+                  <input type="text" class="form-control" id="last_name" name="last_name" placeholder="" value="{{old('last_name')}}" required >
                 </div>
 
                 <div class="form-group {{ $errors->has('email') ? ' has-error' : '' }}">
                   <label for="email">Email</label>
                   <input type="text" class="form-control" id="email" name="email" value="{{old('email')}}" placeholder="" required>
                 </div>
+
                 
-                <div class="form-group {{ $errors->has('password') ? ' has-error' : '' }}">
-                  <label for="password">Password</label>
-                  <input type="text" class="form-control" id="password" name="password" value="{{old('password')}}" placeholder="" >
+                
+                <div class="form-group {{ $errors->has('home_location_code') ? ' has-error' : '' }}">
+                  <label for="password">Home Location Code</label>
+                  <input type="text" class="form-control" id="home_location_code" name="home_location_code" value="{{old('home_location_code')}}" placeholder="" >
                 </div>
                   
                 <div class="form-group {{ $errors->has('user_group_id') ? ' has-error' : '' }}">

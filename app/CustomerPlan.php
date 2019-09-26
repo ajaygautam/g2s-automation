@@ -20,5 +20,6 @@ class CustomerPlan extends Model
         'location_code',
         'referral',
         'referral_other',
+        'yearly_commitment',
     ];
 }

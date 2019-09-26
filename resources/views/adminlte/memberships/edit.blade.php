@@ -67,15 +67,44 @@
                   <input type="text" class="form-control" id="events_discount" name="events_discount" value="{{$membership->events_discount}}" placeholder="" required>
                 </div>
 
-                <div class=" col-md-3 form-group {{ $errors->has('monthly_due_on_season') ? ' has-error' : '' }}">
+
+                <div class="col-md-12">
+                  <label> Yearly Commitment Pricing</label>
+                </div> 
+                
+                <div class=" col-md-3 form-group {{ $errors->has('monthly_due_on_season_yc') ? ' has-error' : '' }}">
                   <label for="email">Monthly Due on Season</label>
-                  <input type="text" class="form-control" id="monthly_due_on_season" name="monthly_due_on_season" value="{{$membership->monthly_due_on_season}}" placeholder="" required>
+                  <input type="text" class="form-control" id="monthly_due_on_season_yc" name="monthly_due_on_season_yc" value="{{$membership->monthly_due_on_season_yc}}" placeholder="" required>
                 </div>
 
-                <div class=" col-md-3  form-group {{ $errors->has('monthly_due_off_season') ? ' has-error' : '' }}">
+                <div class=" col-md-3  form-group {{ $errors->has('monthly_due_off_season_yc') ? ' has-error' : '' }}">
                   <label for="email">Monthly Due off Season</label>
-                  <input type="text" class="form-control" id="monthly_due_off_season" name="monthly_due_off_season" value="{{$membership->monthly_due_off_season}}" placeholder="" required>
+                  <input type="text" class="form-control" id="monthly_due_off_season_yc" name="monthly_due_off_season_yc" value="{{$membership->monthly_due_off_season_yc}}" placeholder="" required>
                 </div>
+
+                <div class="col-md-12">
+                  <label> Monthly Commitment Pricing</label>
+                </div>
+
+                <div class=" col-md-3 form-group {{ $errors->has('monthly_due_on_season_mc') ? ' has-error' : '' }}">
+                  <label for="email">Monthly Due on Season</label>
+                  <input type="text" class="form-control" id="monthly_due_on_season_mc" name="monthly_due_on_season_mc" value="{{$membership->monthly_due_on_season_mc}}" placeholder="" required>
+                </div>
+
+                <div class=" col-md-3  form-group {{ $errors->has('monthly_due_off_season_mc') ? ' has-error' : '' }}">
+                  <label for="email">Monthly Due off Season</label>
+                  <input type="text" class="form-control" id="monthly_due_off_season_mc" name="monthly_due_off_season_mc" value="{{$membership->monthly_due_off_season_mc}}" placeholder="" required>
+                </div>
+
+                <div class=" col-md-3  form-group {{ $errors->has('location_code') ? ' has-error' : '' }}">
+                  <label for="location_code">Location Code</label>
+                  <input type="text" class="form-control" id="location_code" name="location_code" value="{{$membership->location_code}}" placeholder="" required>
+                </div>
+   
+
+
+
+
 
                 <div class="col-md-6" style="min-height:75px">&nbsp;</div>
 

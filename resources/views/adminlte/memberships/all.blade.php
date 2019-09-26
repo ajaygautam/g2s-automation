@@ -47,8 +47,15 @@
                     <td>{{$plan->play_discount=='-1'?'Unlimited':$plan->play_discount.'%'}}</td>
                     <td>{{$plan->food_discount}}%</td>
                     <td>{{$plan->events_discount}}%</td>
-                    <td>{{$plan->monthly_due_on_season=='0.00'?'Cost on Call': '$'.$plan->monthly_due_on_season}}</td>
-                    <td>{{$plan->monthly_due_off_season=='0.00'?'Cost on Call': '$'.$plan->monthly_due_off_season}}</td>
+                    <td>
+                      Yearly Commitment - ${{$plan->monthly_due_on_season_yc}}<br />
+                      Monthly Commitment - ${{$plan->monthly_due_on_season_mc}}<br />
+                    </td>
+                    <td>
+                      Yearly Commitment - ${{$plan->monthly_due_off_season_yc}}<br />
+                      Monthly Commitment - ${{$plan->monthly_due_off_season_mc}}<br />
+                    </td>
+
                     <td>
                       <a href="{{url('/dashboard/memberships/'.$plan->id.'/edit')}}"><i class="fa fa-pencil"></i></a>
                       <a href="{{url('/payment_form/'.$plan->plan_code)}}">
