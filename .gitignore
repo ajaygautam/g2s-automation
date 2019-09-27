@@ -2,6 +2,7 @@
 /storage/app
 /storage/framework
 /storage/logs
+/vendor
 /.idea
 /.vscode
 /.vagrant
@@ -9,3 +10,5 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+/public/.htaccess
+.env
