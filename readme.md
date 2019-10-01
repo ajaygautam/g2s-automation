@@ -131,10 +131,14 @@ UPDATE SECURITY GROUP
 
 # Setting up Stripe Keys
 
-1. Set up stripe keys in /keys.php
-2.  [STRIPE_KEY] = "YOUR_STRIPE_KEY"
-3.  [STRIPE_SECRET] = "YOUR_STRIPE_SECRET"
+	1. Set up stripe keys in /keys.php out side Git Repo on the root folder. This will be included in the code through /config/settings.php file
 
+		<?php
+			return [
+				'STRIPE_KEY' => 'YOUR_STRIPE_KEY',
+				'STRIPE_SECRET' => 'YOUR_STRIPE_SECRET'
+			];
+		?>
 
 
 
