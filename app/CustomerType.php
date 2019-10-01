@@ -4,8 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserGroup extends Model
+class CustomerType extends Model
 {
-    protected $table = 'user_groups';
+    protected $table = 'customer_types';
     protected $primaryKey = 'id';
 }

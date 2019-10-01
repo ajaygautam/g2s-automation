@@ -22,5 +22,19 @@ return [
         '2019-09-18',
         
     ],
-    'tax' => env('TAX',10)
+    'tax' => env('TAX',10),
+    'keys' => include(base_path()."/keys.php"),
+    'default_config_keys' =>[
+        (object)['config_key'=>'Organization Name','config_value'=>''], 
+        (object)['config_key'=>'Location Code','config_value'=>''], 
+        (object)['config_key'=>'Address','config_value'=>''], 
+        (object)['config_key'=>'Phone','config_value'=>''], 
+        (object)['config_key'=>'Contact Person','config_value'=>''], 
+        (object)['config_key'=>'Timezone','config_value'=>''], 
+        (object)['config_key'=>'Peak Start Month','config_value'=>''], 
+        (object)['config_key'=>'Off Peak Start Month','config_value'=>''], 
+        (object)['config_key'=>'Currency','config_value'=>''], 
+        (object)['config_key'=>'Tax','config_value'=>''], 
+        
+    ]
 ];

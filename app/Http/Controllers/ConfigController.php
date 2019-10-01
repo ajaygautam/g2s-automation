@@ -4,13 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Config;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use League\Flysystem\Config as LeagueConfig;
 
 class ConfigController extends Controller
 {
-    public function __construct()
+    public function __construct(Request $request)
     {
         $this->middleware('auth');
+        // pa(Auth::user());
+        // die;
+
+        // if(Auth::user()->customer_type!='1'){
+        //     $request->session()->flash('error_message', 'Access Denied');
+        //     return redirect("/dashboard");
+        // }
     }
     
     /**
@@ -18,12 +26,25 @@ class ConfigController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $all_config = Config::get();
+        $location_code = Auth::user()->home_location_code;
+
+        $all_config = Config::where('location_code', $location_code)->get(); 
+        
+        $config_keys = [] ;
+        if($all_config->count()==0){
+            $all_config = config('settings.default_config_keys'); 
+        }
+       
+        // $all_config = Config::get();
 
         $view_elements = [];
+        
+        // $view_elements['config_keys'] = $config_keys ; 
         $view_elements['all_config'] = $all_config ; 
+        $view_elements['customer_type'] = Auth::user()->customer_type; 
+
         $view_elements['page_title'] = 'Configuration'; 
         $view_elements['component'] = 'config'; 
         $view_elements['menu'] = 'congif'; 
@@ -51,19 +72,30 @@ class ConfigController extends Controller
      */
     public function store(Request $request)
     {
+        if(Auth::user()->customer_type!='1'){
+            $request->session()->flash('error_message', 'Access Denied');
+            return redirect("/dashboard");
+        }
+
+
         $allRequests = $request->all();
-        // pa($allRequests);
+        
+        $location_code = Auth::user()->home_location_code;
+
+        $delete = Config::where('location_code', $location_code)->delete();
+        
 
         foreach($allRequests['data'] as $r){
-            // pa($r); die;
-            $config = Config::find($r['id']);
-            $config->config_key = $r['config_key'];
-            $config->config_value = $r['config_value'];
-            $config->save();
+            $config = Config::create([
+                'config_key' => $r['config_key'],
+                'config_value' => $r['config_value'],
+                'location_code' => $location_code,
+            ]);
         }
 
         $request->session()->flash('success_message', 'Configuration updated successfully');
         return redirect("/dashboard/config");
+      
 
     }
 

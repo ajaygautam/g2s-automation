@@ -8,8 +8,6 @@
   
 @endpush
 
-  <form name='config_form' action="/dashboard/config" method="post">
-  @csrf
 
    <!-- Main content -->
    <section class="content">
@@ -17,52 +15,41 @@
         <div class="col-xs-12">
         <div class="box">
             <div class="box-header">
-              <h3 class="box-title">Configuration</h3>
-              @if($customer_type==1)
-              <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-save"></i> Save Configruation</button>  
-              @endif
+              <h3 class="box-title">All Locations</h3>
+              <a href="{{url('/dashboard/locations/create')}}" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Set up new Location</a>  
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <table id="config_table" class="table table-bordered ">
+              <table id="location_table" class="table table-bordered ">
                 <thead>
                 <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Location Code</th>
+                  <!-- <th>Actions</th> -->
                   
-                  <th>Key</th>
-                  <th>Value</th>
                 </tr>
                 </thead>
-                <tbody>
-                  @php
-                    $i=0;
-                  @endphp
-                  @foreach($all_config as $k=>$c)
-                  <tr>
-                   
-                    <td>
-                       @if($customer_type==1)
-                        <input type="hidden" name="data[{{$k}}][config_key]" value="{{$c->config_key}}" />  
-                       @endif 
-                        {{$c->config_key}} 
-                    </td>
-                    <td>
-                    @if($customer_type==1)
-                        <input name="data[{{$i}}][config_value]" value="{{$c->config_value}}" /> 
-                        <span style="display:none">{{$c->config_value}}</span>   
-                    @else
-                      {{$c->config_value}} 
-                    @endif
-                        
-
-                    </td>
-                  </tr>
-                  @php
-                    $i++;
-                  @endphp
-                  @endforeach
-                </tbody>
                 
-               
+                <tbody>
+                  @foreach($all_location as $location)
+                  <tr>
+                    <td>{{$location->id}}</td>
+                    <td>{{$location->location_name}}</td>
+                    <td>{{$location->location_code}}</td>
+                   
+
+                    <!-- <td>
+                      <a href="{{url('/dashboard/memberships/'.$location->id.'/edit')}}"><i class="fa fa-pencil"></i></a>
+                      <a href="{{url('/payment_form/'.$location->location_code)}}">
+                       <i class="fa fa-eye"></i>
+                      </a>
+                    </td> -->
+                  </tr>
+                  @endforeach
+
+                </tbody>  
+
               </table>
             </div>
             <!-- /.box-body -->
@@ -70,8 +57,7 @@
           <!-- /.box -->
         </div>
     </div>
-  </section>
-  </form>
+</section>
 
 
 @push('scripts')
@@ -87,12 +73,13 @@
 
 <script>
   $(function () {
-    $('#config_table').DataTable({
+    $('#location_table').DataTable({
       "processing": true,
       "serverSide": false,
-      
-      "paging":   false,
+      "paging": false,
+      "order": [[ 0, "desc" ]],
     });
+    
   })
 </script>
 

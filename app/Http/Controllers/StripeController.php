@@ -54,16 +54,22 @@ class StripeController extends Controller
 
         // die('this is called');
 
+
+      $stripe_secret = config('settings.keys.STRIPE_SECRET');
+
        $stripeToken = $request->stripeToken;
-       Stripe::setApiKey(env('STRIPE_SECRET'));
+       Stripe::setApiKey($stripe_secret);
 
        $membership = Membership::where('plan_code',$request->plan_code)->first();
        
        $customer = User::where('email', $request->primary_email)->get();
 
        $isPeakMonth = 0;
+
+       
        $peak_months = ['01','02','03','04','09','10','11','12'];
        $off_peak_months = ['05','06','07','08'];
+
        $current_month = date('m');
    
        if(in_array($current_month,$peak_months)){
@@ -184,8 +190,8 @@ class StripeController extends Controller
 
     //same as commange StripeCharge - will be removed from here
     public function charge(){
-        
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        $stripe_secret = config('settings.keys.STRIPE_SECRET');
+        Stripe::setApiKey($stripe_secret);
          
         // DB::connection()->enableQueryLog();
         $customers = User::with('membership','peak_hours_usage','off_peak_hours_usage')

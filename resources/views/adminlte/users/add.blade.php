@@ -36,19 +36,36 @@
                 
                 <div class="form-group {{ $errors->has('home_location_code') ? ' has-error' : '' }}">
                   <label for="password">Home Location Code</label>
-                  <input type="text" class="form-control" id="home_location_code" name="home_location_code" value="{{old('home_location_code')}}" placeholder="" >
-                </div>
-                  
-                <div class="form-group {{ $errors->has('user_group_id') ? ' has-error' : '' }}">
-                  <label for="user_type">User Type</label>
-                  <select name="user_group_id" id="user_group_id" class="form-control">
+                 
+                  <select name="home_location_code" id="home_location_code" class="form-control">
                       <option value="">Please Select</option>
-                      @foreach($user_groups as $ug)
-                      <option value="{{$ug->id}}" {{old('user_group_id')==$ug->id?"selected":""}}>{{$ug->user_group_name}}</option>
+                      @foreach($locations as $lc)
+                      <option value="{{$lc->location_code}}" {{old('home_location_code')==$lc->location_code?"selected":""}}>{{$lc->location_name}}</option>
                       @endforeach
                   </select>
-                  
                 </div>
+
+                <?php
+                  use Illuminate\Support\Facades\Auth;
+                  // echo '-->'.Auth::user()->customer_type;
+                  if(Illuminate\Support\Facades\Auth::user()->customer_type=='1'){
+                  ?>
+                    
+                  <div class="form-group {{ $errors->has('customer_type') ? ' has-error' : '' }}">
+                    <label for="user_type">Customer Type</label>
+                    <select name="customer_type" id="customer_type" class="form-control">
+                        <option value="">Please Select</option>
+                        @foreach($customer_types as $c)
+                        <option value="{{$c->id}}" {{old('customer_type')==$c->id?"selected":""}}>{{$c->customer_type_name}}</option>
+                        @endforeach
+                        
+                    </select>
+                  </div>
+
+                  <?php 
+                }
+                ?>
+
    
               </div>
               <!-- /.box-body -->

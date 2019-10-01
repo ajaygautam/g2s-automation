@@ -4,7 +4,10 @@ namespace App\Console\Commands;
 
 use App\Customer;
 use App\Payment;
+use App\Resource;
+use App\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Stripe\Charge;
 use Stripe\Stripe;
 
@@ -41,19 +44,16 @@ class StripeCharge extends Command
      */
     public function handle()
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        $stripe_secret = config('settings');
+
+        Stripe::setApiKey($stripe_secret);
          
         // DB::connection()->enableQueryLog();
         $customers = User::with('membership','peak_hours_usage','off_peak_hours_usage')
                         ->get();
         
-        // $queries = DB::getQueryLog();
-        // allQuery($queries);
-        // die;
-
-       
-        // get Resource price
-        //For now, resource_id =1 is used
+                        
+        // pa($customers);
 
         $resource = Resource::find('1');    
         $peak_hour_charge = $resource->peak_price; 

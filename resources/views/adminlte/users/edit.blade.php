@@ -14,7 +14,7 @@
             </div>
             <!-- /.box-header -->
             <!-- form start -->
-            <form role="form" action="{{ url('/users/')}}/{{$user->id}}" method="post">
+            <form role="form" action="{{ url('/dashboard/users/')}}/{{$user->id}}" method="post">
               <input type="hidden" name="_method" value="PUT" />
               {{csrf_field()}}
               <div class="box-body">
@@ -41,17 +41,24 @@
                     
                 <div class="form-group {{ $errors->has('home_location_code') ? ' has-error' : '' }}">
                   <label for="password">Home Location Code</label>
-                  <input type="text" class="form-control" id="home_location_code" name="home_location_code" value="{{$user->home_location_code}}" placeholder="" >
+                  
+                  <select name="home_location_code" id="home_location_code" class="form-control">
+                      <option value="">Please Select</option>
+                      @foreach($locations as $lc)
+                         <option value="{{$lc->location_code}}" {{$user->home_location_code==$lc->location_code?"selected":""}}>{{$lc->location_name}}</option>
+                      @endforeach
+                  </select>
+               
                 </div>
                   
 
 
-                <div class="form-group {{ $errors->has('user_group_id') ? ' has-error' : '' }}">
-                  <label for="user_type">User Type</label>
-                  <select name="user_group_id" id="user_group_id" class="form-control">
+                <div class="form-group {{ $errors->has('customer_type') ? ' has-error' : '' }}">
+                  <label for="user_type">Customer Type</label>
+                  <select name="customer_type" id="customer_type" class="form-control">
                       <option value="">Please Select</option>
-                      @foreach($user_groups as $ug)
-                      <option value="{{$ug->id}}" {{$user->user_group_id==$ug->id?"selected":""}}>{{$ug->user_group_name}}</option>
+                      @foreach($customer_types as $c)
+                      <option value="{{$c->id}}" {{$user->customer_type==$c->id?"selected":""}}>{{$c->customer_type_name}}</option>
                       @endforeach
                       
                   </select>
