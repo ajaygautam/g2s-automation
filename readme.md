@@ -1,17 +1,26 @@
 # Assign Elastic IP
 
 To allocate an Elastic IP address from Amazon's pool of public IPv4 addresses using the console
+	
 	1. Open the Amazon EC2 console at https://console.aws.amazon.com/ec2/.
+	
 	2. In the navigation pane, choose Elastic IPs.
+	
 	3. Choose Allocate new address.
+	
 	4. For IPv4 address pool, choose Amazon pool.
+	
 	5. Choose Allocate, and close the confirmation screen.
 
 
 To associate an Elastic IP address with an instance using the console
+
 	1. Open the Amazon EC2 console at https://console.aws.amazon.com/ec2/.
+
 	2. In the navigation pane, choose Elastic IPs.
+
 	3. Select an Elastic IP address and choose Actions, Associate address.
+
 	4. Select the instance from Instance and then choose Associate.
 
 
