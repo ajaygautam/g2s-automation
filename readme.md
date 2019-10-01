@@ -131,7 +131,7 @@ UPDATE SECURITY GROUP
 
 # Setting up Stripe Keys
 
-	1. Set up stripe keys in /keys.php out side Git Repo on the root folder. This will be included in the code through /config/settings.php file
+Set up stripe keys in /keys.php out side Git Repo on the root folder. This will be included in the code through /config/settings.php file
 
 		<?php
 			return [
