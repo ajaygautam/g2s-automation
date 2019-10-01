@@ -141,6 +141,13 @@ sudo systemctl status mysql.service
 sudo systemctl restart mysql.service
 #################################################
 
+# Setting up Stripe Keys
+
+1. Set up stripe keys in /keys.php
+2.  [STRIPE_KEY] = "YOUR_STRIPE_KEY"
+3.  [STRIPE_SECRET] = "YOUR_STRIPE_SECRET"
+
+
 
 
 
