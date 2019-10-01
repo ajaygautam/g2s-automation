@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Location;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use \App\User;
@@ -39,11 +40,12 @@ class UsersController extends Controller
     {
         $this->authorize('all', User::class); 
         
-        $user_groups = \App\UserGroup::all();
-
+        $customer_types = \App\CustomerType::all();
+        $locations = Location::all();
 
         $view_elements = [];
-        $view_elements['user_groups'] = $user_groups; 
+        $view_elements['customer_types'] = $customer_types; 
+        $view_elements['locations'] = $locations; 
         $view_elements['page_title'] = 'Users'; 
         $view_elements['component'] = 'users'; 
         $view_elements['menu'] = 'users'; 
@@ -64,7 +66,7 @@ class UsersController extends Controller
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
-            'user_group_id' => $request->user_group_id,
+            'customer_type' => $request->customer_type,
             'home_location_code' => $request->home_location_code,
             'password' => \Illuminate\Support\Facades\Hash::make($request->password),
         ]);
@@ -81,12 +83,14 @@ class UsersController extends Controller
         $this->authorize('all', User::class);
 
         $user = \App\User::find($user_id);
-        $user_groups = \App\UserGroup::all();
+        $customer_types = \App\CustomerType::all();
+        $locations = Location::all();
         
         $view_elements = [];
         
         $view_elements['user'] = $user;
-        $view_elements['user_groups'] = $user_groups;
+        $view_elements['customer_types'] = $customer_types;
+        $view_elements['locations'] = $locations; 
         $view_elements['page_title'] = 'Users'; 
         $view_elements['component'] = 'users'; 
         $view_elements['menu'] = 'users'; 
@@ -112,7 +116,7 @@ class UsersController extends Controller
         if($request->password!='')
             $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
 
-        $user->user_group_id = $request->user_group_id;
+        $user->customer_type = $request->customer_type;
         $user->save();
         
         
@@ -218,11 +222,13 @@ class UsersController extends Controller
 
     public function datatables_all_users()
     {
-        $users = \App\User::select(['id','first_name','last_name','email', 'home_location_code']);
+        $users = \App\User::select(['id','first_name','last_name','email', 'home_location_code'])
+                        ->where('home_location_code', Auth::user()->home_location_code)
+                        ->get();
 
         return DataTables::of($users)
             ->addColumn('action', function ($user) {
-                return '<a href="/users/'.$user->id.'/edit"><i class="fa fa-pencil"></i></a>';
+                return '<a href="/dashboard/users/'.$user->id.'/edit"><i class="fa fa-pencil"></i></a>';
             })
             ->make(true);
     }

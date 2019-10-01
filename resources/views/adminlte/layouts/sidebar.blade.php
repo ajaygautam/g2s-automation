@@ -24,20 +24,23 @@
        
 
         @can('all',\App\User::class)
-        <li {{$component=='users'?'active':''}}>
-          <a href="{{url('/dashboard/config')}}"><i class="fa fa-dashboard"></i> <span>Config</span></a>
-        </li>      
-        <li {{$component=='users'?'active':''}}>
-          <a href="{{url('/dashboard/users')}}"><i class="fa fa-users"></i> <span>Users</span>
-           <span class="pull-right-container">
-              <span class="label label-primary pull-right">
-                <?php
-                  echo \App\User::get()->count();
-                ?>
-              </span>
-            </span>
-          </a>
-        </li>      
+          @if(Illuminate\Support\Facades\Auth::user()->customer_type=='1')
+            <li {{$component=='users'?'active':''}}>
+              <a href="{{url('/dashboard/config')}}"><i class="fa fa-dashboard"></i> <span>Config</span></a>
+            </li>  
+            <li {{$component=='users'?'active':''}}>
+              <a href="{{url('/dashboard/users')}}"><i class="fa fa-users"></i> <span>Users</span>
+              <span class="pull-right-container">
+                  <span class="label label-primary pull-right">
+                    <?php
+                      echo \App\User::get()->count();
+                    ?>
+                  </span>
+                </span>
+              </a>
+            </li>  
+         @endif
+           
         <li {{$component=='appointments'?'class=active':''}}>
           <a href="{{url('/dashboard/appointments')}}"><i class="fa fa-users"></i> <span>Appointments</span>
            <span class="pull-right-container">
@@ -79,7 +82,13 @@
         <li {{$component=='memberships'?'class=active':''}}>
           <a href="{{url('/dashboard/memberships')}}"><i class="fa fa-users"></i> <span>Membership Plans</span>
           </a>
-        </li>          
+        </li>   
+          @if(Illuminate\Support\Facades\Auth::user()->customer_type=='1')
+          <li {{$component=='locations'?'class=active':''}}>
+            <a href="{{url('/dashboard/locations')}}"><i class="fa fa-users"></i> <span>Manage Locations</span>
+            </a>
+          </li>    
+          @endif      
         @endcan
       </ul>
     </section>

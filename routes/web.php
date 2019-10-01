@@ -57,6 +57,9 @@ Route::prefix('dashboard')->group(function () {
 
     //memberships
     Route::resource('/memberships','MembershipsController' );
+   
+    //locations
+    Route::resource('/locations','LocationController' );
 
     // Route::get('/memberships','MembershipsController@index');
     // Route::get('/memberships/create','MembershipsController@create');

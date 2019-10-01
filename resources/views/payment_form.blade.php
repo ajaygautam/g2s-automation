@@ -46,31 +46,31 @@
             
             <div class="form-group">
                 <label>Password</label>
-                <input name="password" type="password" class="form-control"  />
+                <input name="password" type="password" class="form-control"  required/>
             </div>
             
             <div class="form-group">
                 <label>Confirm Password</label>
-                <input name="cpassword" type="password" class="form-control"  />
+                <input name="cpassword" type="password" class="form-control"  required/>
             </div>
 
             <hr />
 
             <div class="form-group">
                 <label>Address</label>
-                <input name="address" placeholder="" type="text" class="form-control" value="{{old('address')}}"  />
+                <input name="address" placeholder="" type="text" class="form-control" value="{{old('address')}}"  required/>
             </div>
             <div class="row">
                 <div class="col-6">
                     <div class="form-group">
                         <label>City</label>
-                        <input name="city" placeholder="" type="text" class="form-control"  value="{{old('city')}}" />
+                        <input name="city" placeholder="" type="text" class="form-control"  value="{{old('city')}}" required/>
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="form-group">
                         <label>State</label>
-                        <select name="state" id="state" class="form-control"  >
+                        <select name="state" id="state" class="form-control" required >
                         <option value="">Please select</option>
                         <option value="AL" {{old('state','CT')=="AL"?"selected":""}}>Alabama</option>
                         <option value="AK" {{old('state','CT')=="AK"?"selected":""}}>Alaska</option>
@@ -137,7 +137,7 @@
                 <div class="col-6">
                     <div class="form-group">
                         <label>Zip Code</label>
-                        <input name="zipcode" placeholder="" type="text" class="form-control"  value="{{old('zipcode')}}" />
+                        <input name="zipcode" placeholder="" type="text" class="form-control"  value="{{old('zipcode')}}" required />
                     </div>
                 </div>
             </div>
