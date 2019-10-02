@@ -22,7 +22,7 @@ return [
         '2019-09-18',
         
     ],
-    'tax' => env('TAX',10),
+    'tax' =>6.35,
     'keys' => include(base_path()."/keys.php"),
     'default_config_keys' =>[
         (object)['config_key'=>'Organization Name','config_value'=>''], 

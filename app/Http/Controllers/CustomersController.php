@@ -148,6 +148,9 @@ class CustomersController extends Controller
  
  
          $membership_cost = $cost + ($cost*$tax)/100;
+         $membership_cost = round($membership_cost,2);
+
+
          Log::info('membership cost=>'.$membership_cost);
          //die;
  

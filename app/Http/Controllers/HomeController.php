@@ -23,7 +23,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-
+        // echo(round(26,2) . "<br>");
+        // die;
         // $plan_starts_on = strtotime("2019-01-01");
         // $plan_ends_on = strtotime('+1 year', $plan_starts_on);
 
