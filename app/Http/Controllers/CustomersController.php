@@ -109,8 +109,10 @@ class CustomersController extends Controller
  
         $membership = Membership::find($request->membership_plan_id);
         
-        $customer = User::where('email', $request->primary_email)->get();
- 
+        $customer = User::where('email', $request->primary_email)->first();
+        // pa($customer);
+        // die();
+
         $isPeakMonth = 0;
  
         
@@ -209,13 +211,13 @@ class CustomersController extends Controller
              }
         }
  
-        Log::info('Stripe Customer ID=>'.$customer->stripe_customer_id);
+        // Log::info('Stripe Customer ID=>'.$customer->stripe_customer_id);
 
 
         // if($request->charge_customer=='1'){
 
 
-
+            // die;
             $charge = \Stripe\Charge::create([
                 "amount" => $membership_cost * 100, // convert to cents - stripe accepts in cents
                 "currency" => "usd",

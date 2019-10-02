@@ -67,7 +67,7 @@ class StripeController extends Controller
 
        $membership = Membership::where('plan_code',$request->plan_code)->first();
        
-       $customer = User::where('email', $request->primary_email)->get();
+       $customer = User::where('email', $request->primary_email)->first();
 
        $isPeakMonth = 0;
 
@@ -105,7 +105,9 @@ class StripeController extends Controller
         }
 
 
+
         $membership_cost = $cost + ($cost*$tax)/100;
+        $membership_cost = round($membership_cost,2);
 
 
 
