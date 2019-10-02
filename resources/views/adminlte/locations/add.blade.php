@@ -26,7 +26,7 @@
 
                 <div class="col-md-9 form-group {{ $errors->has('location_code') ? ' has-error' : '' }}">
                   <label for="name">Location Code</label>
-                  <input type="text" class="form-control" id="location_code" name="location_code" placeholder="" value="{{old('location_code')}}" required autofocus>
+                  <input type="text" class="form-control" id="location_code" name="location_code" placeholder="" value="{{old('location_code')}}" required >
                 </div>
 
                 
@@ -62,15 +62,6 @@
 
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-  <script>
-    $( function() {
-            $( "#trial_start_date" ).datepicker();
-            $( "#billing_start_date" ).datepicker();
-            $( "#termination_date" ).datepicker();
-        } 
-    );
-  </script>
 
 @endpush
 

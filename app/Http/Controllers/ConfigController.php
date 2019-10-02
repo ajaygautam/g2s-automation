@@ -44,13 +44,14 @@ class ConfigController extends Controller
         // $view_elements['config_keys'] = $config_keys ; 
         $view_elements['all_config'] = $all_config ; 
         $view_elements['customer_type'] = Auth::user()->customer_type; 
+        $view_elements['location_code'] = $location_code; 
 
         $view_elements['page_title'] = 'Configuration'; 
         $view_elements['component'] = 'config'; 
         $view_elements['menu'] = 'congif'; 
         $view_elements['breadcrumbs']['Configuration'] = array("link"=>'/config',"active"=>'1');
        
-        $view = viewName('config.all');
+        $view = viewName('config.show');
         return view($view, $view_elements);
     }
 

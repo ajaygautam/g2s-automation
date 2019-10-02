@@ -9,51 +9,53 @@
 @endpush
 
 
+
    <!-- Main content -->
    <section class="content">
       <div class="row">
         <div class="col-xs-12">
         <div class="box">
             <div class="box-header">
-              <h3 class="box-title">All Locations</h3>
-              <a href="{{url('/dashboard/locations/create')}}" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Set up new Location</a>  
+              <h3 class="box-title">Configuration</h3>
+              @if($customer_type==1)
+              <a href="{{url('/dashboard/locations/load_config/')}}/{{$location_code}}" class="btn btn-primary pull-right"><i class="fa fa-save"></i> Edit Config</a>  
+              @endif
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <table id="location_table" class="table table-bordered ">
+              <table id="config_table" class="table table-bordered ">
                 <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Location Code</th>
-                  <th>Config</th>
-                  <th>Actions</th>
                   
+                  <th>Key</th>
+                  <th>Value</th>
                 </tr>
                 </thead>
-                
                 <tbody>
-                  @foreach($all_location as $location)
+                  @php
+                    $i=0;
+                  @endphp
+                  @foreach($all_config as $k=>$c)
                   <tr>
-                    <td>{{$location->id}}</td>
-                    <td>{{$location->location_name}}</td>
-                    <td>{{$location->location_code}}</td>
-                    <td>
-                      <a href="{{url('/dashboard/locations/load_config')}}/{{$location->location_code}}">
-                        Config
-                      </a>
-                    </td>
                    
-
                     <td>
-                      <a href="{{url('/dashboard/locations/'.$location->id.'/edit')}}"><i class="fa fa-pencil"></i></a>
                       
+                        {{$c->config_key}} 
+                    </td>
+                    <td>
+                   
+                      {{$c->config_value}} 
+                    
+
                     </td>
                   </tr>
+                  @php
+                    $i++;
+                  @endphp
                   @endforeach
-
-                </tbody>  
-
+                </tbody>
+                
+               
               </table>
             </div>
             <!-- /.box-body -->
@@ -61,8 +63,8 @@
           <!-- /.box -->
         </div>
     </div>
-</section>
-
+  </section>
+ 
 
 @push('scripts')
     
@@ -77,13 +79,12 @@
 
 <script>
   $(function () {
-    $('#location_table').DataTable({
+    $('#config_table').DataTable({
       "processing": true,
       "serverSide": false,
-      "paging": false,
-      "order": [[ 0, "desc" ]],
+      
+      "paging":   false,
     });
-    
   })
 </script>
 

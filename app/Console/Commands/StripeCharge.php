@@ -44,6 +44,9 @@ class StripeCharge extends Command
      */
     public function handle()
     {
+
+        die('here');
+
         $stripe_secret = config('settings');
 
         Stripe::setApiKey($stripe_secret);

@@ -15,8 +15,8 @@
         <div class="col-xs-12">
         <div class="box">
             <div class="box-header">
-              <h3 class="box-title">All Users</h3>
-              <a href="#" class="btn btn-success pull-right"><i class="fa fa-plus"></i> New customer</a>  
+              <h3 class="box-title">All Customers</h3>
+              <a href="{{url('/dashboard/customers/create')}}" class="btn btn-success pull-right"><i class="fa fa-plus"></i> New customer</a>  
             </div>
             <!-- /.box-header -->
             <div class="box-body">

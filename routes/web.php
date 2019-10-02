@@ -48,7 +48,7 @@ Route::prefix('dashboard')->group(function () {
     Route::get('appointments/dt/all_appointments','AppointmentsController@datatables_all_appointments');
 
     //Customers
-    Route::get('/customers','CustomersController@index');
+    Route::resource('/customers','CustomersController');
     Route::get('customers/dt/all_customers','CustomersController@datatablesAllCustomers');
 
     //Payments
@@ -60,6 +60,9 @@ Route::prefix('dashboard')->group(function () {
    
     //locations
     Route::resource('/locations','LocationController' );
+    Route::get('/locations/load_config/{location_code}', 'LocationController@loadConfig');
+    Route::post('/locations/save_config/{location_code}', 'LocationController@saveConfig');
+
 
     // Route::get('/memberships','MembershipsController@index');
     // Route::get('/memberships/create','MembershipsController@create');
@@ -76,7 +79,10 @@ Route::prefix('dashboard')->group(function () {
     //config
     Route::get('/config','ConfigController@index');
     Route::post('/config','ConfigController@store');
-    
+
+
+
+
 
     //TEST STRIPE CONTROLLER
     Route::get('/stripe_subscription','StripeController@StripeSubscription');

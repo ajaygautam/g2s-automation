@@ -23,6 +23,16 @@ class HomeController extends Controller
      */
     public function index()
     {
+
+        // $plan_starts_on = strtotime("2019-01-01");
+        // $plan_ends_on = strtotime('+1 year', $plan_starts_on);
+
+        // echo date('Y-m-d', $plan_ends_on);
+
+        // echo $acuity_user_id = config('settings.keys.ACUITY_USER_ID'); 
+        // echo $acuity_api_key = config('settings.keys.ACUITY_API_KEY'); 
+
+
         // $user = \Illuminate\Support\Facades\Auth::user();
         // $this->authorize('view', \App\User::class);
         // $this->authorize('all', \App\User::class );

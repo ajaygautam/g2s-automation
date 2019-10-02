@@ -69,7 +69,11 @@ class AppointmentsController extends Controller
 
     public static function dumpAppointmentsIntoDB($appointment_id, $type)
     {
-        $client = new \GuzzleHttp\Client(['auth' => ['18254030','ce8cd1b295e9160c55d09a5b4dd3b9de']]);
+        $acuity_user_id = config('settings.keys.ACUITY_USER_ID'); 
+        $acuity_api_key = config('settings.keys.ACUITY_API_KEY'); 
+
+        $client = new \GuzzleHttp\Client(['auth' => [$acuity_user_id,$acuity_api_key]]);
+
         $request = $client->get('https://acuityscheduling.com/api/v1/appointments/'.$appointment_id);
         $appointment = json_decode($request->getBody()->getContents());
         

@@ -8,7 +8,7 @@
   
 @endpush
 
-  <form name='config_form' action="/dashboard/config" method="post">
+  <form name='config_form' action="/dashboard/locations/save_config/{{$location_code}}" method="post">
   @csrf
 
    <!-- Main content -->

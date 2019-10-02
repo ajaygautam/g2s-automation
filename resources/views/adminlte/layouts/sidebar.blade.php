@@ -24,10 +24,11 @@
        
 
         @can('all',\App\User::class)
-          @if(Illuminate\Support\Facades\Auth::user()->customer_type=='1')
+         
             <li {{$component=='users'?'active':''}}>
               <a href="{{url('/dashboard/config')}}"><i class="fa fa-dashboard"></i> <span>Config</span></a>
             </li>  
+            @if(Illuminate\Support\Facades\Auth::user()->customer_type=='1')
             <li {{$component=='users'?'active':''}}>
               <a href="{{url('/dashboard/users')}}"><i class="fa fa-users"></i> <span>Users</span>
               <span class="pull-right-container">

@@ -58,6 +58,11 @@ class StripeController extends Controller
       $stripe_secret = config('settings.keys.STRIPE_SECRET');
 
        $stripeToken = $request->stripeToken;
+       echo  "stripe token==".$stripeToken;
+
+       die;
+
+
        Stripe::setApiKey($stripe_secret);
 
        $membership = Membership::where('plan_code',$request->plan_code)->first();
