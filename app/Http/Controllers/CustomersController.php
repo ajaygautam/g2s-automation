@@ -211,10 +211,10 @@ class CustomersController extends Controller
              }
         }
  
-        // Log::info('Stripe Customer ID=>'.$customer->stripe_customer_id);
+        Log::info('Stripe Customer ID=>'.$customer->stripe_customer_id);
 
 
-        // if($request->charge_customer=='1'){
+        if($request->charge_customer=='1'){
 
 
             // die;
@@ -245,7 +245,7 @@ class CustomersController extends Controller
                 ]);
             }    
             
-        // }
+        }
 
         $request->session()->flash('success_message', 'New customer is created successfully');
         return redirect("/dashboard/customers");

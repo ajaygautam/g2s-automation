@@ -50,7 +50,7 @@
 
               <div class="col-md-6 form-group {{ $errors->has('plan_starts_on') ? ' has-error' : '' }}">
                 <label for="name">Plan Starts On</label>
-                  <input name="plan_starts_on" id="plan_starts_on" autocomplete="off" type="text" class="form-control"  />
+                  <input name="plan_starts_on" id="plan_starts_on" autocomplete="off" type="text" class="form-control" value="{{old('plan_starts_on')}}" />
               </div>
 
               <div class="col-md-9 form-group {{ $errors->has('address') ? ' has-error' : '' }}">
@@ -139,20 +139,16 @@
                     </select>
               </div>
 
-              <div class="col-md-6 form-group">
-                  <label>Country</label>
-                    <select name="country" id="country" class="form-control"  >
-                        <option value="">Please select</option>
-                        <option value="USA" selected>US</option>
-                    </select>
-              </div>
+              <div class="clearfix"></div>
+
+            
 
             <div class="col-md-6 form-group">
                 <label>Membership Plan</label>
                 <select name="membership_plan_id" id="membership_plan_id" class="form-control"  >
                         <option value="">Please select</option>
                         @foreach($plans as $key=>$plan)
-                          <option value="{{$plan->id}}" >{{$plan->plan_name}}</option>
+                          <option value="{{$plan->id}}" {{old('membership_plan_id')==$plan->id?"selected":""}}>{{$plan->plan_name}}</option>
                         @endforeach
                     </select>
             </div>
@@ -174,9 +170,7 @@
 
 
             <div class="form-group col-md-12">
-            <label>Charge the Customer?
-              <small>If you are adding old customer, check 'no', otherwise check 'yes'</small>  
-            </label>    
+            <label>Charge the Customer?</label>    
 
                 <div class="form-check-inline">
                     <label class="form-check-label">
