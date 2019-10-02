@@ -110,8 +110,10 @@ class CustomersController extends Controller
         $membership = Membership::find($request->membership_plan_id);
         
         $customer = User::where('email', $request->primary_email)->first();
-        // pa($customer);
-        // die();
+    //  echo  $customer;
+    //     // if($customer)
+    //     // pa($customer);
+    //     die();
 
         $isPeakMonth = 0;
  
@@ -154,9 +156,9 @@ class CustomersController extends Controller
 
 
          Log::info('membership cost=>'.$membership_cost);
-         //die;
+        //  die;
  
-        if($customer->count()== 0){
+        if($customer==''){
              $stripeCustomer = \Stripe\Customer::create([
                  'source' => $stripeToken,
                  'name' => $request->customer_name,
