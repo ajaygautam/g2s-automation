@@ -1,0 +1,11 @@
+<?php
+
+return [
+    'STRIPE_KEY' => 'pk_test_JA0U3awxLyRc5Cu4a8vbujfa00sFbI8J1R',
+    'STRIPE_SECRET' => 'sk_test_MAlyixzobvAPNOmbrf7esLrJ003VDAgXJp'
+    'ACUITY_USER_ID' => '18254030',
+    'ACUITY_API_KEY' => 'ce8cd1b295e9160c55d09a5b4dd3b9de',
+];
+
+?>
+
