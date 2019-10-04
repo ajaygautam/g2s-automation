@@ -59,7 +59,8 @@ class User extends Authenticatable
             'id', // Primary key on KnowledgeArea table...
             'id', // Primary key on Category table...
             'membership_plan_id' // Foreign key for KnowledgeAreas in KnowledgeAreaCategory...
-        );
+        )
+        ;
     }
 
     public function customerPlan(){
