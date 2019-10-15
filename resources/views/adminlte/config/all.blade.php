@@ -46,12 +46,13 @@
                         {{$c->config_key}} 
                     </td>
                     <td>
-                    @if($customer_type==1)
-                        <input name="data[{{$i}}][config_value]" value="{{$c->config_value}}" /> 
-                        <span style="display:none">{{$c->config_value}}</span>   
-                    @else
-                      {{$c->config_value}} 
-                    @endif
+                      @if($customer_type==1)
+                          <input name="data[{{$i}}][config_value]" 
+                                value="{{$c->config_key=='Location Code' && $c->config_value == "" ? $location_code : $c->config_value }}" /> 
+                          <span style="display:none">{{$c->config_value}}</span>   
+                      @else
+                        {{$c->config_value}} 
+                      @endif
                         
 
                     </td>
@@ -90,7 +91,7 @@
     $('#config_table').DataTable({
       "processing": true,
       "serverSide": false,
-      
+      "ordering": false
       "paging":   false,
     });
   })

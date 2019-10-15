@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redirect;
+
 function create_breadcrumbs($nav_array)
 {
     
@@ -141,46 +144,40 @@ function format_date($date,$type=null, $timezone = null)
 }
 
 
-function createChatTxtFile($chat, $chat_messages = null)
-{
-    $chat_text_file = 'chat_transcripts/'.md5(microtime()).'.txt';
-     
-    $chat_file_header = '#######################################################################################'."\r\n";
-    $chat_file_header .= '##### '.$chat->website."\r\n";                                                                           
-    $chat_file_header .= '##### '."\r\n";                                                             
-    $chat_file_header .= '##### Visitor Name: '.$chat->visitor_name."\r\n";
-    $chat_file_header .= '##### Visitor IP: '.$chat->visitor_ip."\r\n";                                                                           
-    $chat_file_header .= '##### Visitor Email: '.$chat->email."\r\n";                                                                           
-    $chat_file_header .= '#####'."\r\n";                                                                            
-    $chat_file_header .= '##### Agent Name: '.$chat->display_name."\r\n";                                                                           
-    $chat_file_header .= '##### Agent Email: '.$chat->agent_email."\r\n";                                                                           
-    $chat_file_header .= '##### Agent IP: '.$chat->agent_ip."\r\n";                                                                          
-    $chat_file_header .= '#####'."\r\n";                                             
-    $chat_file_header .= '##### Rated: '.$chat->rate."\r\n";                                                                           
-    $chat_file_header .= '#####'."\r\n";                                                     
-    $chat_file_header .= '##### Started On: '.$chat->started_timestamp."\r\n";                                                                           
-    $chat_file_header .= '##### Ended On: '.$chat->ended_timestamp."\r\n";                                                                           
-    $chat_file_header .= '#####'."\r\n";                                                                            
-    $chat_file_header .= '##### Group: '.$chat->group."\r\n";                                                                           
-    $chat_file_header .= '#######################################################################################'."\r\n";
-    
-    \Illuminate\Support\Facades\Storage::append($chat_text_file, $chat_file_header);
-    
-    $string ='';
+function isPeakMonth($peak_month_starts, $off_peak_month_starts, $current_month = null){
 
-    if($chat_messages==null){
-        $chat_messages = \App\ChatMessage::where('livechat_id', $chat->livechat_id)->get();
+    if($current_month==null){
+        $current_month = date('n');
     }
-        
-    foreach($chat_messages as $m){
-        $string .= $m->occurred_on_timestamp.' - '.$m->author_name .' - '.$m->message ."\r\n";
-    }
+
+    $peak = new DateTime($peak_month_starts);
+    $peak_start = $peak->format('n');
     
-    \Illuminate\Support\Facades\Storage::append($chat_text_file, $string);
+    $off = new DateTime($off_peak_month_starts);
+    $off_start = $off->format('n');
 
-    return $chat_text_file;
+    $i = $peak_start; $peak_months  = [];
+    
+    // while($i != $off_start)    
+    // {
+    //     Log::info('i==>'. $i);
+    //     if($i==13){
+    //         $i = 1;
+    //     }
+    //     $peak_months[] = $i;
+    //     $i++;     
+    // }
 
+
+    return 1;
+
+    if(in_array($current_month,$peak_months)){
+       return 1;
+    }
+    return 0;
 }
+
+
 
 function get_domain($url)
 {
@@ -230,6 +227,14 @@ function get_timezones()
         $view_folder = env('VIEW_FOLDER');
         return $view_folder.'.'.$view;
 
+    }
+
+    function throwExpection($e){
+        Log::info($e->getMessage());
+        $error = $e->getMessage();
+        Session::flash('error_message', $error);
+        return Redirect::back();
+        exit;
     }
 
 

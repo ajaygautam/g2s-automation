@@ -82,7 +82,7 @@
     $('#config_table').DataTable({
       "processing": true,
       "serverSide": false,
-      
+      "ordering": false
       "paging":   false,
     });
   })

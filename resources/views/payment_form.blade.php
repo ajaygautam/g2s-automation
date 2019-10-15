@@ -24,6 +24,20 @@
             <div class="top-wrap mb-3">
                 <h3 class="text-center mb-0">MEMBERSHIP</h3>
                 <h6 class="text-center mb-1">Info and payment details</h6>
+                   
+                <?php
+                    use Illuminate\Support\Facades\Session;
+                ?>
+               
+               @if(Session::get('error_message'))
+                <div class="alert alert-danger">
+                    <ul>
+                        <li>{{ Session::get('error_message') }}</li>
+                    </ul>
+                </div>
+                @endif
+
+
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>

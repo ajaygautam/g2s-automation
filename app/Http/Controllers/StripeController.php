@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Config;
 use App\Customer;
 use App\CustomerPlan;
 use App\Mail\SetPasswordMailer;
@@ -10,13 +11,14 @@ use App\Payment;
 use App\PaymentMethod;
 use App\Resource;
 use App\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash as IlluminateHash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
-
+use Illuminate\Support\Facades\Session;
 use Stripe\Charge;
 use Stripe\Stripe;
 use Stripe\Token as StripeToken;
@@ -24,6 +26,7 @@ use Stripe\Token as StripeToken;
 
 class StripeController extends Controller
 {
+
     public function StripeSubscriptionPost(Request $request){
        
        $allRequests = $request->all();
@@ -58,73 +61,190 @@ class StripeController extends Controller
       $stripe_secret = config('settings.keys.STRIPE_SECRET');
 
        $stripeToken = $request->stripeToken;
-       echo  "stripe token==".$stripeToken;
-
-       die;
-
-
        Stripe::setApiKey($stripe_secret);
 
        $membership = Membership::where('plan_code',$request->plan_code)->first();
        
        $customer = User::where('email', $request->primary_email)->first();
 
-       $isPeakMonth = 0;
-
+      
+       $chargable_amount = self::CalculateChargeableAmount([
+           'email' => $request->primary_email,
+           'membership' => $membership,
+           'request' => $request
+       ]);
        
-       $peak_months = ['01','02','03','04','09','10','11','12'];
-       $off_peak_months = ['05','06','07','08'];
 
-       $current_month = date('m');
-   
-       if(in_array($current_month,$peak_months)){
-           $isPeakMonth = 1;
+       if($chargable_amount > 0){
+            
+            try{
+                $customer = self::GetStripeCustomer([
+                    'stripeToken' => $stripeToken,
+                    'name' => $request->customer_name,
+                    'email' => $request->primary_email,
+                    'membership' => $membership,
+                    'request' => $request,
+                ]);
+         
+                $payment = self::StripeCharge([
+                    'customer' => $customer,
+                    'amount' => $chargable_amount,
+                    'request' => $request,
+                ]);
+                return Redirect::to('payment_success/'.$payment->id);
+            }catch(Exception $e){
+               return throwExpection($e);
+            }
+
+
+          
        }
-      // $cost = $isPeakMonth==1?$membership->monthly_due_on_season:$membership->monthly_due_off_season;
-       $tax = config('settings.tax');
+
        
-       if($membership->tax_exemption==1){
-            $tax = 0;
-        }
+    }
 
-        if($isPeakMonth==1)
-        {
-            if($request->yearly_commitment == 1){
-                $cost = $membership->monthly_due_on_season_yc; 
-            }   
-            else{
-                $cost = $membership->monthly_due_on_season_mc; 
-            }
-        } else{
-            if($request->yearly_commitment == 1){
-                $cost = $membership->monthly_due_off_season_yc; 
-            }   
-            else{
-                $cost = $membership->monthly_due_off_season_mc; 
-            }
-        }
+    public function paymentSuccessPage($id){
+        $payment = Payment::find($id);
+        $link = $payment->stripe_receipt_url;
+        
+        return view('payment_success',['link'=>$link]);
+    }
 
 
+    public static function CalculateChargeableAmount($dataObj){
+        $email = $dataObj['email'];
+        $membership = $dataObj['membership'];
+        $request = $dataObj['request'];
 
-        $membership_cost = $cost + ($cost*$tax)/100;
-        $membership_cost = round($membership_cost,2);
+       
+        $customer = User::where('email', $email)->first();
+        
+        $peak_month_starts =   Config::where('location_code', $membership->location_code)
+                    ->where('config_key', 'Peak Start Month')
+                    ->first()->config_value;
+        
+        $off_peak_month_starts =   Config::where('location_code', $membership->location_code)
+                    ->where('config_key', 'Off Peak Start Month')
+                    ->first()->config_value;
+
+        
+
+        $isPeakMonth = isPeakMonth($peak_month_starts, $off_peak_month_starts);
+       
+        $tax = Config::where('location_code', $membership->location_code)
+                    ->where('config_key', 'Tax')
+                    ->first()->config_value;
+ 
+ 
+        
+        if($membership->tax_exemption==1){
+             $tax = 0;
+         }
+ 
+         if($isPeakMonth==1)
+         {
+             if($request->yearly_commitment == 1){
+                 $cost = $membership->monthly_due_on_season_yc; 
+             }   
+             else{
+                 $cost = $membership->monthly_due_on_season_mc; 
+             }
+         } else{
+             if($request->yearly_commitment == 1){
+                 $cost = $membership->monthly_due_off_season_yc; 
+             }   
+             else{
+                 $cost = $membership->monthly_due_off_season_mc; 
+             }
+         }
+ 
+         $membership_cost = $cost + ($cost*$tax)/100;
+         $membership_cost = round($membership_cost,2);
+ 
+         return $membership_cost;
+
+    }
 
 
+    public static function StripeCharge($dataObj){
+      
+        $customer = $dataObj['customer'];
+        $amount = $dataObj['amount'];
+        $request = $dataObj['request'];
+        
+        
+        $charge = \Stripe\Charge::create([
+            "amount" => $amount * 100, // convert to cents - stripe accepts in cents
+            "currency" => "usd",
+            "customer" => $customer->stripe_customer_id, // Stripe customer ID
+            "description" => "Charge for ". $request->customer_name
+        ]);
+        
+              
+      
 
-       if($customer->count()== 0){
-            $stripeCustomer = \Stripe\Customer::create([
-                'source' => $stripeToken,
-                'name' => $request->customer_name,
-                'email' => $request->primary_email,
+        if($charge){
+            $payment = Payment::create([
+                'customer_id' => $customer->id,
+                'amount' => $amount,
+                'payment_status' => $charge->status,
+                'stripe_charge_id' => $charge->id,
+                'stripe_receipt_url' => $charge->receipt_url,
+                'stripe_currency' => $charge->currency,
+                'stripe_invoice_number' => $charge->invoice
             ]);
+
+            $paymentMethod = PaymentMethod::create([
+                'customer_id' => $customer->id,
+                // 'card_brand' => ,
+                'card_last_four' => $charge->source->last4,
+                'exp_month' => $charge->source->exp_month,
+                'exp_year' => $charge->source->exp_year,
+            ]);
+        
+            return $payment;
+        }
+
+
+    }
+
+    public static function StripeCustomerCreate($dataObj){
+     
+            $stripeCustomer = \Stripe\Customer::create($dataObj);
+            return $stripeCustomer;
+      
+        
+    }
+
+    public static function GetStripeCustomer($dataObj){
+        $stripe_token = $dataObj['stripeToken'];
+        $name = $dataObj['name'];
+        $email = $dataObj['email'];
+        $membership = $dataObj['membership'];
+        $request = $dataObj['request'];
+
+
+        $customer = User::where('email', $email)->first();
+
+        if($customer=='')
+        {
+           
+            $stripeCustomer = self::StripeCustomerCreate([
+                'source' => $stripe_token,
+                'name' => $name,
+                'email' => $email,
+            ]);
+          
+           
+
             if($stripeCustomer){
-                $name = explode(' ', $request->customer_name);
+                $name = explode(' ', $name);
                 $plan_starts_on = date('Y-m-d');
                 $plan_ends_on = date('Y-m-d', strtotime('+1 year'));
                 // $next_billing_date = date('Y-m-d', strtotime('+1 month'));
 
                 $customer = User::create([
-                        'email' => $request->primary_email,
+                        'email' => $email,
                         'password' => bcrypt($request->password),
                         'first_name' => $name[0],
                         'last_name' => $name[count($name)-1],
@@ -155,47 +275,18 @@ class StripeController extends Controller
                 //     ->send(new SetPasswordMailer($customer));
                 
             }
-       }
+        }
 
-        $charge = \Stripe\Charge::create([
-            "amount" => $membership_cost * 100, // convert to cents - stripe accepts in cents
-            "currency" => "usd",
-            "customer" => $customer->stripe_customer_id, // Stripe customer ID
-            "description" => "Charge for ". $request->customer_name
-        ]);
+        return $customer;
 
-        if($charge){
-            $payment = Payment::create([
-                'customer_id' => $customer->id,
-                'amount' => $membership_cost,
-                'payment_status' => $charge->status,
-                'stripe_charge_id' => $charge->id,
-                'stripe_receipt_url' => $charge->receipt_url,
-                'stripe_currency' => $charge->currency,
-                'stripe_invoice_number' => $charge->invoice
-            ]);
-
-            $paymentMethod = PaymentMethod::create([
-                'customer_id' => $customer->id,
-                // 'card_brand' => ,
-                'card_last_four' => $charge->source->last4,
-                'exp_month' => $charge->source->exp_month,
-                'exp_year' => $charge->source->exp_year,
-            ]);
-        }    
-
-        return Redirect::to('payment_success/'.$payment->id);
     }
 
-    public function paymentSuccessPage($id){
-        $payment = Payment::find($id);
-        $link = $payment->stripe_receipt_url;
-        
-        return view('payment_success',['link'=>$link]);
-    }
+    
 
 
-    //same as commange StripeCharge - will be removed from here
+
+
+    //same as command StripeCharge - will be removed from here
     public function charge(){
         $stripe_secret = config('settings.keys.STRIPE_SECRET');
         Stripe::setApiKey($stripe_secret);
