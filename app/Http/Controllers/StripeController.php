@@ -168,21 +168,22 @@ class StripeController extends Controller
 
     public static function StripeCharge($dataObj){
       
+        $stripe_secret = config('settings.keys.STRIPE_SECRET');
+        Stripe::setApiKey($stripe_secret);
+
         $customer = $dataObj['customer'];
         $amount = $dataObj['amount'];
         $request = $dataObj['request'];
+        $comments = isset($dataObj['comments'])?$dataObj['comments']:'';
         
         
         $charge = \Stripe\Charge::create([
             "amount" => $amount * 100, // convert to cents - stripe accepts in cents
             "currency" => "usd",
             "customer" => $customer->stripe_customer_id, // Stripe customer ID
-            "description" => "Charge for ". $request->customer_name
+            "description" => "Charge for ". $customer->first_name." ".$customer->last_name
         ]);
         
-              
-      
-
         if($charge){
             $payment = Payment::create([
                 'customer_id' => $customer->id,
@@ -191,12 +192,12 @@ class StripeController extends Controller
                 'stripe_charge_id' => $charge->id,
                 'stripe_receipt_url' => $charge->receipt_url,
                 'stripe_currency' => $charge->currency,
-                'stripe_invoice_number' => $charge->invoice
+                'stripe_invoice_number' => $charge->invoice,
+                'comments' => $comments,
             ]);
 
-            $paymentMethod = PaymentMethod::create([
+            $paymentMethod = PaymentMethod::firstOrCreate([
                 'customer_id' => $customer->id,
-                // 'card_brand' => ,
                 'card_last_four' => $charge->source->last4,
                 'exp_month' => $charge->source->exp_month,
                 'exp_year' => $charge->source->exp_year,
@@ -235,8 +236,6 @@ class StripeController extends Controller
                 'email' => $email,
             ]);
           
-           
-
             if($stripeCustomer){
                 $name = explode(' ', $name);
                 $plan_starts_on = date('Y-m-d');

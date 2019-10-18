@@ -31,10 +31,17 @@
                         </ul>
                     </div>
                 @endif
-              <div class="col-md-6 form-group {{ $errors->has('customer_name') ? ' has-error' : '' }}">
-                <label for="name">Name</label>
-                    <input name="customer_name" id="customer_name"  type="text" class="form-control" value="{{old('customer_name')}}"/>
+              
+                <div class="col-md-6 form-group {{ $errors->has('first_name') ? ' has-error' : '' }}">
+                <label for="name">First Name</label>
+                    <input name="first_name" id="first_name"  type="text" class="form-control" value="{{old('first_name')}}"/>
               </div>
+              
+              <div class="col-md-6 form-group {{ $errors->has('last_name') ? ' has-error' : '' }}">
+                <label for="name">Last Name</label>
+                    <input name="last_name" id="last_name"  type="text" class="form-control" value="{{old('last_name')}}"/>
+              </div>
+
 
               <div class="col-md-6 form-group {{ $errors->has('primary_email') ? ' has-error' : '' }}">
                 <label for="name">Email</label>

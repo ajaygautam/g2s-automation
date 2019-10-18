@@ -49,6 +49,11 @@ Route::prefix('dashboard')->group(function () {
 
     //Customers
     Route::resource('/customers','CustomersController');
+    Route::post('/customers/update_membership/{customer_id}','CustomersController@updateMembership');
+    Route::post('/customers/update_card/{customer_id}','CustomersController@updateCard');
+    Route::get('/customers/charge/{customer_id}','CustomersController@chargeForm');
+    Route::post('/customers/process_charge/{customer_id}','CustomersController@processCharge');
+
     Route::get('customers/dt/all_customers','CustomersController@datatablesAllCustomers');
 
     //Payments
