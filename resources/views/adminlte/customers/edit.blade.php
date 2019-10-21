@@ -179,9 +179,9 @@
                 </select>
             </div>
 
-            <div class="form-group col-md-6" id="referral_other_container" style="display:none">
+            <div class="form-group col-md-6" id="referral_other_container" style="display:{{$customer->customerPlan->referral=='Other'?'block':'none'}}">
                 <label>Please specify</label>
-                <input id="referral_other" disabled name="referral_other" placeholder="" type="text" class="form-control" value="{{$customer->customerPlan->referral_other}}" />
+                <input id="referral_other" {{$customer->customerPlan->referral!='Other'?'disabled':''}}  name="referral_other" placeholder="" type="text" class="form-control" value="{{$customer->customerPlan->referral_other}}" />
             </div>
 
                 

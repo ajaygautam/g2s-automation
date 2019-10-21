@@ -13,7 +13,7 @@
             </div>
             <!-- /.box-header -->
             <!-- form start -->
-            <form role="form" action="{{ url('/profile/upload_pic') }}" method="post" enctype="multipart/form-data">
+            <form role="form" action="{{ url('/dashboard/profile/upload_pic') }}" method="post" enctype="multipart/form-data">
               {{csrf_field()}}
               <div class="box-body">
                 <div class="form-group">

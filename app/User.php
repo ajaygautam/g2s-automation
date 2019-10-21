@@ -92,6 +92,28 @@ class User extends Authenticatable
 
     }
 
+    public function food_drink_charges(){
+        return $this->hasMany('App\FoodDrinksCharge','customer_id', 'id')
+            ->where( function($query){
+                $query->where(DB::raw('Month(consumed_on)'),date('n'));
+            });
+    }
+   
+    public function food_drink_charges_monthly_total(){
+        return $this->hasOne('App\FoodDrinksCharge','customer_id', 'id')
+            ->where( function($query){
+                $query->where(DB::raw('Month(consumed_on)'),date('n'));
+            })
+            ->selectRaw('SUM(cost) as total_monthly, customer_id')
+            ->groupBy(['customer_id']);
+
+    }
+  
+    public function payments(){
+        return $this->hasMany('App\Payment','customer_id', 'id');
+    }
+
+
     // public function peak_hours_usage(){
     //     return $this->hasMany('App\Appointment', 'customer_id', 'id')
     //         // ->where('acuity_action','scheduled')

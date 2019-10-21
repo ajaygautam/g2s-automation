@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Payment;
+use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 
@@ -16,7 +19,6 @@ class PaymentsController extends Controller
     
     public function index(){
         // $this->authorize('all', User::class);
-         
         
  
          $view_elements = [];
@@ -33,10 +35,13 @@ class PaymentsController extends Controller
 
      public function datatablesAllPayments()
      {
-         $payments = Payment::with('customer')->orderBy('id','desc')->get();
- 
-            // pa($payments);die;
-         return DataTables::of($payments)
+        $payments = DB::table('payments')
+                        ->leftJoin('users','payments.customer_id','=','users.id')
+                        ->where('users.home_location_code','=',Auth::user()->home_location_code)
+                        ->get();
+
+
+        return DataTables::of($payments)
              ->addColumn('action', function ($payment) {
                  return '<a href="/payments/'.$payment->id.'/edit"><i class="fa fa-pencil"></i></a>';
              })

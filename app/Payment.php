@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Payment extends Model
 {
@@ -31,7 +32,10 @@ class Payment extends Model
     ];
 
     public function customer(){
-        return $this->hasOne('App\User','id','customer_id');
+        return $this->hasOne('App\User','id','customer_id')
+        ->where(function($query){
+            $query->where('home_location_code',Auth::user()->home_location_code);
+        });
     }
 
 }

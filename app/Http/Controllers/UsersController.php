@@ -223,7 +223,8 @@ class UsersController extends Controller
     public function datatables_all_users()
     {
         $users = \App\User::select(['id','first_name','last_name','email', 'home_location_code'])
-                        ->where('home_location_code', Auth::user()->home_location_code)
+                        //->where('home_location_code', Auth::user()->home_location_code)
+                        ->where('customer_type','<>','4')
                         ->get();
 
         return DataTables::of($users)

@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
+use stdClass;
 use Stripe\Charge;
 use Stripe\Stripe;
 use Stripe\Token as StripeToken;
@@ -95,9 +96,6 @@ class StripeController extends Controller
             }catch(Exception $e){
                return throwExpection($e);
             }
-
-
-          
        }
 
        
@@ -165,6 +163,83 @@ class StripeController extends Controller
 
     }
 
+    public static function CalculateChargeableOverageAmount($customer){
+
+        $additional_final = 0;
+        $membership = $customer->membership[0];
+        
+        // pa($customer->customerPlan);
+
+        $discount_play = $membership->play_discount;  //in percent
+                
+        $used_peak_hours = $used_off_peak_hours = 0;
+        
+        if(count($customer->peak_hours_usage)){
+            $used_peak_hours = ($customer->peak_hours_usage[0]->peak_hours_used)/60; // covert minutes to hours
+        }
+        if(count($customer->off_peak_hours_usage)){
+            $used_off_peak_hours = ($customer->off_peak_hours_usage[0]->off_peak_hours_used)/60; //convert minutes to hours
+        }
+
+        $included_peak_hours = $customer->membership[0]->included_peak_hours;
+        $included_off_peak_hours = $customer->membership[0]->included_off_peak_hours;
+
+        $resource = Resource::find('1');    
+        $peak_hour_charge = $resource->peak_price; 
+        $off_peak_hour_charge = $resource->off_peak_price; 
+
+        $additional = (($used_peak_hours - $included_peak_hours) * $peak_hour_charge) +  (($used_off_peak_hours - $included_off_peak_hours) * $off_peak_hour_charge);
+
+        $additional_final = $additional - ($additional * $discount_play)/100;
+
+        $peak_month_starts =   Config::where('location_code', $membership->location_code)
+                    ->where('config_key', 'Peak Start Month')
+                    ->first()->config_value;
+        
+        $off_peak_month_starts =   Config::where('location_code', $membership->location_code)
+                    ->where('config_key', 'Off Peak Start Month')
+                    ->first()->config_value;
+
+        
+
+        $isPeakMonth = isPeakMonth($peak_month_starts, $off_peak_month_starts);
+       
+        $tax = Config::where('location_code', $membership->location_code)
+                    ->where('config_key', 'Tax')
+                    ->first()->config_value;
+ 
+ 
+        
+        if($membership->tax_exemption==1){
+             $tax = 0;
+         }
+ 
+         if($isPeakMonth==1)
+         {
+             if($customer->customerPlan->yearly_commitment == 1){
+                 $cost = $membership->monthly_due_on_season_yc; 
+             }   
+             else{
+                 $cost = $membership->monthly_due_on_season_mc; 
+             }
+         } else{
+             if($customer->customerPlan->yearly_commitment == 1){
+                 $cost = $membership->monthly_due_off_season_yc; 
+             }   
+             else{
+                 $cost = $membership->monthly_due_off_season_mc; 
+             }
+         }
+ 
+         $cost = $cost + $additional_final;
+
+         $membership_cost = $cost + ($cost*$tax)/100;
+         $membership_cost = round($membership_cost,2);
+ 
+         return $membership_cost;
+
+    }
+
 
     public static function StripeCharge($dataObj){
       
@@ -173,15 +248,15 @@ class StripeController extends Controller
 
         $customer = $dataObj['customer'];
         $amount = $dataObj['amount'];
-        $request = $dataObj['request'];
-        $comments = isset($dataObj['comments'])?$dataObj['comments']:'';
+        
+        $comments = isset($dataObj['comments'])?$dataObj['comments']:'New membership';
         
         
         $charge = \Stripe\Charge::create([
             "amount" => $amount * 100, // convert to cents - stripe accepts in cents
             "currency" => "usd",
             "customer" => $customer->stripe_customer_id, // Stripe customer ID
-            "description" => "Charge for ". $customer->first_name." ".$customer->last_name
+            "description" => $comments
         ]);
         
         if($charge){
@@ -213,8 +288,6 @@ class StripeController extends Controller
      
             $stripeCustomer = \Stripe\Customer::create($dataObj);
             return $stripeCustomer;
-      
-        
     }
 
     public static function GetStripeCustomer($dataObj){
@@ -238,10 +311,17 @@ class StripeController extends Controller
           
             if($stripeCustomer){
                 $name = explode(' ', $name);
-                $plan_starts_on = date('Y-m-d');
-                $plan_ends_on = date('Y-m-d', strtotime('+1 year'));
-                // $next_billing_date = date('Y-m-d', strtotime('+1 month'));
-
+                if(isset($request->plan_starts_on)&&($request->plan_starts_on!='')){
+                    $plan_starts_on = $request->plan_starts_on;
+                    $plan_starts_on_ts = strtotime($plan_starts_on);
+                    $plan_ends_on_ts = strtotime('+1 year', $plan_starts_on_ts);
+                    $plan_ends_on =  date('Y-m-d', $plan_ends_on_ts);
+                }
+                else{
+                    $plan_starts_on = date('Y-m-d');
+                    $plan_ends_on = date('Y-m-d', strtotime('+1 year'));
+                }
+                
                 $customer = User::create([
                         'email' => $email,
                         'password' => bcrypt($request->password),
@@ -255,6 +335,7 @@ class StripeController extends Controller
                         'country'=>$request->country,
                         'zipcode'=>$request->zipcode,
                         'set_password_hash'=>md5(str_random(8)),
+                        'customer_type'=>4,
                         'home_location_code'=>$membership->location_code,
                     ]
                 );
@@ -277,95 +358,42 @@ class StripeController extends Controller
         }
 
         return $customer;
-
     }
 
     
-
-
-
-
     //same as command StripeCharge - will be removed from here
     public function charge(){
-        $stripe_secret = config('settings.keys.STRIPE_SECRET');
-        Stripe::setApiKey($stripe_secret);
-         
-        // DB::connection()->enableQueryLog();
-        $customers = User::with('membership','peak_hours_usage','off_peak_hours_usage')
-                        ->get();
-        
-        $queries = DB::getQueryLog();
-        // allQuery($queries);
-        
-        // die;
-
        
-        // get Resource price
-        //For now, resource_id =1 is used
-
-        $resource = Resource::find('1');    
-        $peak_hour_charge = $resource->peak_price; 
-        $off_peak_hour_charge = $resource->off_peak_price;
-
+        // DB::connection()->enableQueryLog();
+        $customers = User::with('membership','customerPlan','peak_hours_usage','off_peak_hours_usage')
+                          ->where('customer_type','4')  
+                          ->orderBy('id','desc')
+                        ->get();
 
 
+   
         foreach($customers as $customer){
            //process only members
-          
-            if(count($customer->membership)>0)
-            {
-                if($customer->membership[0]->frequency == 0){
-                   //fetch discount 
-                    $discount_play = $customer->membership[0]->play_discount;  //in percent
-                
-                    $used_peak_hours = $used_off_peak_hours = 0;
-                
-                    if(count($customer->peak_hours_usage)){
-                        $used_peak_hours = ($customer->peak_hours_usage[0]->peak_hours_used)/60; // covert minutes to hours
-                    }
-                    if(count($customer->off_peak_hours_usage)){
-                        $used_off_peak_hours = ($customer->off_peak_hours_usage[0]->off_peak_hours_used)/60; //convert minutes to hours
-                    }
-                
-                    $included_peak_hours = $customer->membership[0]->included_peak_hours;
-                    $included_off_peak_hours = $customer->membership[0]->included_off_peak_hours;
-    
-                    $additional = (($used_peak_hours - $included_peak_hours) * $peak_hour_charge) +  (($used_off_peak_hours - $included_off_peak_hours) * $off_peak_hour_charge);
-                    $additional_final = $additional - ($additional * $discount_play)/100;
-        
-                    if($additional_final>0){
-                        $chargable_amount = $customer->membership[0]->cost + $additional_final;
-                    }
-                    else{
-                        $chargable_amount = $customer->membership[0]->cost;
-                    }
 
-                    Log::info($customer->id.' -> '.$chargable_amount);
+           $chargable_amount = self::CalculateChargeableOverageAmount($customer);
 
-                    if($chargable_amount > 0){
-                        $charge = Charge::create([
-                            "amount" => $chargable_amount * 100, //convert into cents
-                            "currency" => "usd",
-                            "customer" => $customer->stripe_customer_id,
-                            "description" => "Monthly membership charges"
-                        ]);
-        
-                        if($charge){
-                            $payment = Payment::create([
-                                'customer_id' => $customer->id,
-                                'amount' => $chargable_amount,
-                                'payment_status' => $charge->status,
-                                'stripe_charge_id' => $charge->id,
-                                'stripe_receipt_url' => $charge->receipt_url,
-                                'stripe_currency' => $charge->currency,
-                                'stripe_invoice_number' => $charge->invoice
-                            ]);
-                        }    
-                    }      
-                } //frequency==0
-
-               
+           if($chargable_amount > 0){
+            $request = new stdClass();
+            $request->stripe_charge_comment = "Monthly charge";
+                try{
+                    $payment = self::StripeCharge([
+                        'customer' => $customer,
+                        'amount' => $chargable_amount,
+                        'comments' => "Membership cost",
+                    ]);
+                    
+                }catch(Exception $e){
+                    // echo "dasdas";
+                    // return throwExpection($e);
+                }
             }
+
+            
            
         } 
     }

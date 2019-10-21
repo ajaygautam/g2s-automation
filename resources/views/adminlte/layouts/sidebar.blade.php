@@ -30,50 +30,18 @@
             </li>  
             @if(Illuminate\Support\Facades\Auth::user()->customer_type=='1')
             <li {{$component=='users'?'active':''}}>
-              <a href="{{url('/dashboard/users')}}"><i class="fa fa-users"></i> <span>Users</span>
-              <span class="pull-right-container">
-                  <span class="label label-primary pull-right">
-                    <?php
-                      echo \App\User::get()->count();
-                    ?>
-                  </span>
-                </span>
-              </a>
+              <a href="{{url('/dashboard/users')}}"><i class="fa fa-users"></i> <span>Users</span></a>
             </li>  
          @endif
            
         <li {{$component=='appointments'?'class=active':''}}>
-          <a href="{{url('/dashboard/appointments')}}"><i class="fa fa-users"></i> <span>Appointments</span>
-           <span class="pull-right-container">
-              <span class="label label-primary pull-right">
-                <?php
-                  echo \App\Appointment::get()->count();
-                ?>
-              </span>
-            </span>
-          </a>
+          <a href="{{url('/dashboard/appointments')}}"><i class="fa fa-users"></i> <span>Appointments</span></a>
         </li>          
         <li {{$component=='customers'?'class=active':''}}>
-          <a href="{{url('/dashboard/customers')}}"><i class="fa fa-users"></i> <span>Customers</span>
-           <span class="pull-right-container">
-              <span class="label label-primary pull-right">
-                <?php
-                  echo \App\Customer::get()->count();
-                ?>
-              </span>
-            </span>
-          </a>
+          <a href="{{url('/dashboard/customers')}}"><i class="fa fa-users"></i> <span>Customers</span></a>
         </li>          
         <li {{$component=='payments'?'class=active':''}}>
-          <a href="{{url('/dashboard/payments')}}"><i class="fa fa-users"></i> <span>Payments</span>
-           <span class="pull-right-container">
-              <span class="label label-primary pull-right">
-                <?php
-                  echo \App\Payment::get()->count();
-                ?>
-              </span>
-            </span>
-          </a>
+          <a href="{{url('/dashboard/payments')}}"><i class="fa fa-users"></i> <span>Payments</span></a>
         </li>          
      
         <li {{$component=='resources'?'class=active':''}}>

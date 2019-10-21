@@ -65,12 +65,12 @@
       columns: [
             {data: 'id', name: 'id'},
             {data: 'name', name: 'name', "render":function(data, type, row){
-              console.log(row.customer);
-              if(row.customer){
-                var html =  row.customer.first_name!='' ? row.customer.first_name+' ' : '';
-                html += row.customer.last_name!=''? row.customer.last_name:''; 
+              // console.log(row.customer);
+              // if(row){
+                var html =  row.first_name!='' ? row.first_name+' ' : '';
+                html += row.last_name!=''? row.last_name:''; 
                 return html;
-            }
+            // }
               
               return '';
             }},

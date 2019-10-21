@@ -26,12 +26,11 @@
                   <th>ID</th>
                   <th>Name</th>
                   <th>Email</th>
+                  <th>Location Code</th>
                   <th>Referred By</th>
                   <th>Plan</th>
                   <th> {{date('M')}} - Usage</th>
                   <th>Due</th>
-                  
-                 
                   <th>Actions</th>                  
                 </tr>
                 </thead>
@@ -73,6 +72,7 @@
               }
             },
              {data: 'email', name: 'email'},
+             {data: 'home_location_code', name: 'home_location_code'},
              {data: 'referral', name: 'referral', "render": function(data, type, row){
               // console.log(row);
               if(row.customer_plan){

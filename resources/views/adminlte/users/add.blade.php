@@ -31,6 +31,11 @@
                   <label for="email">Email</label>
                   <input type="text" class="form-control" id="email" name="email" value="{{old('email')}}" placeholder="" required>
                 </div>
+                
+                <div class="form-group {{ $errors->has('password') ? ' has-error' : '' }}">
+                  <label for="email">Password</label>
+                  <input type="password" class="form-control" id="password" name="password" value="{{old('password')}}" placeholder="" required>
+                </div>
 
                 
                 

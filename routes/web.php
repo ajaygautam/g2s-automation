@@ -53,6 +53,9 @@ Route::prefix('dashboard')->group(function () {
     Route::post('/customers/update_card/{customer_id}','CustomersController@updateCard');
     Route::get('/customers/charge/{customer_id}','CustomersController@chargeForm');
     Route::post('/customers/process_charge/{customer_id}','CustomersController@processCharge');
+    Route::get('/customers/delete_food_drink_charge/{charge_id}','CustomersController@deleteFoodDrinkCharges');
+    Route::get('/customers/add_food_drink_charges/{customer_id}','CustomersController@addFoodDrinkCharges');
+    Route::post('/customers/save_food_drink_charges/{customer_id}','CustomersController@saveFoodDrinkCharges');
 
     Route::get('customers/dt/all_customers','CustomersController@datatablesAllCustomers');
 

@@ -13,7 +13,7 @@
             </div>
             <!-- /.box-header -->
             <!-- form start -->
-            <form role="form" action="{{ url('/update_password') }}" method="post" data-toggle="validator">
+            <form role="form" action="{{ url('/dashboard/update_password') }}" method="post" data-toggle="validator">
               {{csrf_field()}}
               <div class="box-body">
                 <div class="form-group">
