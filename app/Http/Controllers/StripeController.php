@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Config;
 use App\Customer;
 use App\CustomerPlan;
+use App\FoodDrinksCharge;
 use App\Mail\SetPasswordMailer;
 use App\Membership;
 use App\Payment;
@@ -170,6 +171,7 @@ class StripeController extends Controller
         
         // pa($customer->customerPlan);
 
+        $discount_food = $membership->food_discount;  //in percent
         $discount_play = $membership->play_discount;  //in percent
                 
         $used_peak_hours = $used_off_peak_hours = 0;
@@ -192,6 +194,12 @@ class StripeController extends Controller
 
         $additional_final = $additional - ($additional * $discount_play)/100;
 
+
+        //Food and Drinks
+        $food_charges = isset($customer->food_drink_charges_monthly_total->total_monthly)?$customer->food_drink_charges_monthly_total->total_monthly:0;
+        $food_charges_discounted =  $food_charges - ($food_charges*$discount_food)/100;
+
+        //Monthly 
         $peak_month_starts =   Config::where('location_code', $membership->location_code)
                     ->where('config_key', 'Peak Start Month')
                     ->first()->config_value;
@@ -230,8 +238,10 @@ class StripeController extends Controller
                  $cost = $membership->monthly_due_off_season_mc; 
              }
          }
+
+
  
-         $cost = $cost + $additional_final;
+         $cost = $cost + $food_charges_discounted + $additional_final;
 
          $membership_cost = $cost + ($cost*$tax)/100;
          $membership_cost = round($membership_cost,2);
@@ -365,7 +375,7 @@ class StripeController extends Controller
     public function charge(){
        
         // DB::connection()->enableQueryLog();
-        $customers = User::with('membership','customerPlan','peak_hours_usage','off_peak_hours_usage')
+        $customers = User::with('membership','customerPlan','food_drink_charges_monthly_total','peak_hours_usage','off_peak_hours_usage')
                           ->where('customer_type','4')  
                           ->orderBy('id','desc')
                         ->get();
@@ -375,8 +385,13 @@ class StripeController extends Controller
         foreach($customers as $customer){
            //process only members
 
-           $chargable_amount = self::CalculateChargeableOverageAmount($customer);
+           
 
+
+           $chargable_amount = self::CalculateChargeableOverageAmount($customer);
+            // echo "<br />";
+
+        //    die;
            if($chargable_amount > 0){
             $request = new stdClass();
             $request->stripe_charge_comment = "Monthly charge";
