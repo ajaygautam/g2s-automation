@@ -18,8 +18,11 @@ class MembershipsController extends Controller
     public function index(){
         // $this->authorize('all', User::class);
         
-        // $allMemberships = Membership::with('customers')->get();
-        $allMemberships = Membership::all();
+        if(Auth::user()->customer_type==1){
+              $allMemberships = Membership::all();
+        }else{
+          $allMemberships = Membership::where('location_code', Auth::user()->home_location_code)->get();
+        }
 
          $view_elements = [];
          

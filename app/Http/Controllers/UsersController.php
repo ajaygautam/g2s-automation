@@ -13,6 +13,16 @@ class UsersController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+
+        $this->middleware(function ($request, $next) {
+            $customer_type= Auth::user()->customer_type;
+            if(Auth::user()->customer_type!='1'){
+                    $request->session()->flash('error_message', 'Access Denied');
+                    return redirect("/dashboard");
+            }
+            return $next($request);
+        });
+
     }
     
 
